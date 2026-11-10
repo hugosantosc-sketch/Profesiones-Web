@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprende tu carrera desde cero</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0f1f1c; color: #eef3f1; min-height: 100vh; padding: 48px 20px; }
+    header { text-align: center; max-width: 700px; margin: 0 auto 40px; }
+    h1 { font-size: 2.2rem; margin-bottom: 12px; }
+    header p { color: #9db3ad; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+    .card { display: block; background: #16302b; border: 1px solid #25483f; border-radius: 14px; padding: 24px; text-decoration: none; color: inherit; transition: transform .15s, border-color .15s; }
+    .card:hover { transform: translateY(-4px); border-color: #d9822b; }
+    .card h2 { font-size: 1.25rem; margin-bottom: 8px; }
+    .card p { color: #9db3ad; font-size: .95rem; line-height: 1.4; margin-bottom: 16px; }
+    .card span { color: #d9822b; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Aprende tu carrera desde cero</h1>
+    <p>Elige una carrera y empieza a estudiar paso a paso, con teoría, práctica y ejercicios.</p>
+  </header>
+
+  <main class="grid">
+    <a class="card" href="https://ing-software-psi.vercel.app/">
+      <h2>Ingeniería de Software</h2>
+      <p>Del primer bit a un sistema en producción.</p>
+      <span>Entrar →</span>
+    </a>
+    <a class="card" href="https://contabilidad-peru.vercel.app/">
+      <h2>Contabilidad</h2>
+      <p>Contabilidad en el Perú, de básico a avanzado.</p>
+      <span>Entrar →</span>
+    </a>
+    <a class="card" href="https://derecho-peru.vercel.app/">
+      <h2>Derecho Peruano</h2>
+      <p>Leyes y procesos legales, de básico a avanzado.</p>
+      <span>Entrar →</span>
+    </a>
+    <a class="card" href="https://ing-civil-gamma.vercel.app/">
+      <h2>Ingeniería Civil</h2>
+      <p>Fundamentos de ingeniería civil desde cero.</p>
+      <span>Entrar →</span>
+    </a>
+    <a class="card" href="https://progamacion.vercel.app/#inicio">
+      <h2>Código desde cero</h2>
+      <p>Aprende a programar desde lo más básico.</p>
+      <span>Entrar →</span>
+    </a>
+  </main>
+</body>
+</html>
