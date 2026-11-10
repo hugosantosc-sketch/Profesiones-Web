@@ -1,0 +1,28 @@
+{
+  "name": "Código Desde Cero — aprende a programar desde los bits",
+  "short_name": "Código Desde Cero",
+  "description": "Curso completo de programación en español: binario, diagramas de flujo, pseudocódigo, estructuras de datos, algoritmos, objetos y compiladores. Con laboratorio interactivo y ejercicios resueltos.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f6f2",
+  "theme_color": "#0f766e",
+  "categories": ["education", "productivity", "developer"],
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

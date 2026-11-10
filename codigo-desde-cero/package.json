@@ -1,0 +1,26 @@
+{
+  "name": "codigo-desde-cero",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Curso interactivo de programación en español, desde el código binario hasta los compiladores. Sin dependencias.",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test.js",
+    "check": "node test.js && node build.js",
+    "start": "node build.js && node serve.js",
+    "serve": "node serve.js"
+  },
+  "keywords": [
+    "programacion",
+    "pseudocodigo",
+    "diagramas-de-flujo",
+    "algoritmos",
+    "educacion",
+    "espanol"
+  ]
+}

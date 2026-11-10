@@ -1,0 +1,27 @@
+# Salida del empaquetador (se regenera con `node build.js`)
+public/index.html
+dist/
+
+# Dependencias (este proyecto no tiene, pero por si se añaden)
+node_modules/
+
+# Entornos y secretos — nunca versionar
+.env
+.env.*
+!.env.example
+
+# Plataformas
+.vercel/
+.netlify/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Registros y temporales
+*.log
+npm-debug.log*
+*.tmp

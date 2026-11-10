@@ -1,0 +1,57 @@
+name: Pruebas y despliegue
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    name: Pruebas y construcción
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar la batería de pruebas
+        run: node test.js
+
+      - name: Construir
+        run: node build.js
+
+      - name: Verificar que la salida existe y no está vacía
+        run: |
+          test -s public/index.html
+          test -s dist/artifact.html
+          echo "Tamaño: $(du -h public/index.html | cut -f1)"
+
+      - name: Subir el sitio construido
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  # Despliegue a GitHub Pages. Para usarlo: en el repositorio,
+  # Settings → Pages → Source: "GitHub Actions".
+  # Si despliegas en Vercel o Netlify, puedes borrar este job.
+  desplegar:
+    name: Desplegar a GitHub Pages
+    needs: pruebas
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4

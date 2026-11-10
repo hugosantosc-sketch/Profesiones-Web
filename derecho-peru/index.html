@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Aula de Derecho Peruano</title>
+<meta name="description" content="Curso progresivo de Derecho peruano: lecciones, normas, jurisprudencia y ejercicios de fácil a difícil.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Spectral:ital,wght@0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: aula de estudio. Ruta lateral (niveles → módulos → temas) y lectura central a ~68ch.
+   Las citas normativas usan tipografía mono como en un código anotado; el granate es la tinta del sello. */
+:root{
+  --papel:#F3F5F2; --superficie:#FFFFFF; --superficie-2:#E9EEE9; --tinta:#16201A; --tinta-2:#4B5850; --tinta-3:#6E7B73; --linea:#D3DBD4;
+  --granate:#8C1D2C; --granate-hover:#721523; --granate-suave:#F6E5E7; --sobre-granate:#FFFFFF;
+  --oro:#8A600F; --oro-suave:#F5EBD3;
+  --ok:#1D6F42; --ok-suave:#E0F1E6; --error:#B42318; --error-suave:#FBE7E4;
+  --d1:#1D6F42; --d2:#8A600F; --d3:#8C1D2C;
+  --sombra:0 10px 30px -12px rgba(22,32,26,.25);
+  --f-titulo:"Spectral", Georgia, "Times New Roman", serif;
+  --f-texto:"Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-cita:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --barra-h:60px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --papel:#101512; --superficie:#171D19; --superficie-2:#1F2722; --tinta:#E5ECE7; --tinta-2:#AAB6AE; --tinta-3:#86938B; --linea:#2C3631;
+    --granate:#E46B79; --granate-hover:#EE8692; --granate-suave:#3A1E23; --sobre-granate:#1A0A0D;
+    --oro:#DDAF52; --oro-suave:#352A16;
+    --ok:#62C690; --ok-suave:#15301F; --error:#F27A6E; --error-suave:#3B1B18;
+    --d1:#62C690; --d2:#DDAF52; --d3:#E46B79;
+    --sombra:0 12px 32px -12px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --papel:#101512; --superficie:#171D19; --superficie-2:#1F2722; --tinta:#E5ECE7; --tinta-2:#AAB6AE; --tinta-3:#86938B; --linea:#2C3631;
+  --granate:#E46B79; --granate-hover:#EE8692; --granate-suave:#3A1E23; --sobre-granate:#1A0A0D;
+  --oro:#DDAF52; --oro-suave:#352A16;
+  --ok:#62C690; --ok-suave:#15301F; --error:#F27A6E; --error-suave:#3B1B18;
+  --d1:#62C690; --d2:#DDAF52; --d3:#E46B79;
+  --sombra:0 12px 32px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--barra-h) + 16px)}
+body{background:var(--papel);color:var(--tinta);font:17px/1.62 var(--f-texto);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--superficie)}
+a{color:var(--granate);text-underline-offset:3px}
+a:hover{color:var(--granate-hover)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--granate);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{font-family:var(--f-titulo);line-height:1.2;text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.005em}
+.lbl{font:600 .7rem/1.2 var(--f-texto);letter-spacing:.09em;text-transform:uppercase;color:var(--tinta-3)}
+.mono{font-family:var(--f-cita)}
+.num{font-variant-numeric:tabular-nums}
+
+/* Barra superior */
+.barra{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--superficie);border-bottom:1px solid var(--linea);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.barra-int{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:14px;height:var(--barra-h)}
+.marca{display:flex;align-items:center;gap:10px;font:700 1.12rem/1 var(--f-titulo);color:var(--tinta);text-decoration:none;white-space:nowrap}
+.marca:hover{color:var(--tinta)}
+.sello{flex:none;width:32px;height:32px;border-radius:50%;border:2px solid var(--granate);display:grid;place-items:center;color:var(--granate);font:700 1rem/1 var(--f-titulo);position:relative}
+.sello::after{content:"";position:absolute;inset:2px;border-radius:50%;border:1px dashed var(--granate);opacity:.55}
+.buscador{flex:1;max-width:520px;margin-left:auto;position:relative;min-width:0}
+.buscador svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--tinta-3);pointer-events:none}
+.buscador input{width:100%;height:40px;border-radius:8px;border:1px solid var(--linea);background:var(--papel);color:var(--tinta);padding:0 12px 0 34px;font:inherit;font-size:.95rem}
+.buscador input::placeholder{color:var(--tinta-3)}
+.resultados{position:absolute;top:46px;left:0;right:0;background:var(--superficie);border:1px solid var(--linea);border-radius:10px;box-shadow:var(--sombra);max-height:min(70vh,520px);overflow:auto;z-index:45;padding:6px}
+.res-item{display:block;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--tinta)}
+.res-item:hover,.res-item.activo{background:var(--superficie-2);color:var(--tinta)}
+.res-item .lbl{display:block;margin-bottom:2px}
+.res-item strong{font-weight:600}
+.res-item small{display:block;color:var(--tinta-2);font-size:.85rem;line-height:1.4;margin-top:2px}
+.res-vacio{padding:14px;color:var(--tinta-2);font-size:.92rem}
+.btn-menu{display:none;flex:none;width:40px;height:40px;border-radius:8px;border:1px solid var(--linea);background:var(--superficie);align-items:center;justify-content:center;cursor:pointer}
+.btn-menu svg{width:20px;height:20px}
+
+/* Marco */
+.marco{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:288px minmax(0,1fr);gap:44px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.ruta{position:sticky;top:calc(var(--barra-h) + env(safe-area-inset-top,0px));align-self:start;max-height:calc(100vh - var(--barra-h) - env(safe-area-inset-top,0px));overflow:auto;padding-block:24px 48px;padding-right:18px;border-right:1px solid var(--linea);scrollbar-width:thin}
+.vista{padding-block:34px 96px;min-width:0;outline:none}
+.velo{display:none}
+
+.ruta-top{display:grid;gap:2px;margin-bottom:22px}
+.ruta-top a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;color:var(--tinta);text-decoration:none;font-weight:600;font-size:.95rem}
+.ruta-top a svg{width:17px;height:17px;color:var(--tinta-3);flex:none}
+.ruta-top a:hover{background:var(--superficie-2)}
+.ruta-top a.activo{background:var(--granate-suave);color:var(--granate)}
+.ruta-top a.activo svg{color:var(--granate)}
+.ruta-nivel{margin-bottom:18px}
+.ruta-nivel>.lbl{display:flex;gap:8px;align-items:baseline;padding:0 10px 6px}
+.ruta-nivel>.lbl b{color:var(--granate);font-weight:700;white-space:nowrap;flex:none}
+.ruta-mod{display:block;padding:6px 10px 7px;border-radius:7px;text-decoration:none;color:var(--tinta-2);font-size:.93rem;line-height:1.3}
+.ruta-mod:hover{background:var(--superficie-2);color:var(--tinta)}
+.ruta-mod.activo{background:var(--superficie-2);color:var(--tinta);font-weight:600}
+.ruta-mod .mini{display:block;height:3px;border-radius:2px;background:var(--linea);margin-top:6px;overflow:hidden}
+.ruta-mod .mini i{display:block;height:100%;background:var(--ok);border-radius:2px}
+.ruta-temas{margin:2px 0 8px 12px;padding-left:10px;border-left:1px solid var(--linea);display:grid;gap:1px}
+.ruta-temas a{font-size:.86rem;color:var(--tinta-2);text-decoration:none;padding:4px 8px;border-radius:6px;line-height:1.3;display:flex;gap:8px;align-items:flex-start}
+.ruta-temas a:hover{background:var(--superficie-2);color:var(--tinta)}
+.ruta-temas a.activo{color:var(--granate);font-weight:600}
+.ruta-temas a .pt{flex:none;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--tinta-3);margin-top:5px}
+.ruta-temas a .pt.parcial{border-color:var(--oro);background:linear-gradient(90deg,var(--oro) 50%,transparent 50%)}
+.ruta-temas a .pt.completo{border-color:var(--ok);background:var(--ok)}
+
+@media (max-width:960px){
+  .marco{grid-template-columns:minmax(0,1fr);gap:0}
+  .ruta{position:fixed;top:0;left:0;bottom:0;width:min(330px,88vw);max-height:none;background:var(--superficie);z-index:70;transform:translateX(-105%);transition:transform .25s ease;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-shadow:var(--sombra);border-right:1px solid var(--linea)}
+  .ruta.abierta{transform:none}
+  .velo.visible{display:block;position:fixed;inset:0;background:rgba(10,14,12,.45);z-index:65}
+  .btn-menu{display:inline-flex}
+  .vista{padding-block:24px 80px}
+}
+@media (max-width:560px){ .marca .txt{display:none} body{font-size:16.5px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
+
+/* Tipografía de lectura */
+.miga{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.86rem;color:var(--tinta-3);margin-bottom:14px}
+.miga a{color:var(--tinta-2);text-decoration:none}
+.miga a:hover{color:var(--granate);text-decoration:underline}
+.titulo-pag{font-size:clamp(1.85rem,1.3rem + 2.2vw,2.75rem);font-weight:600;margin-bottom:12px;max-width:24ch}
+.entrada{font-size:1.1rem;color:var(--tinta-2);max-width:66ch;margin:0 0 20px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:26px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 .76rem/1.3 var(--f-cita);padding:5px 8px;border:1px solid var(--linea);border-radius:5px;color:var(--tinta-2);background:var(--superficie);max-width:100%;overflow-wrap:anywhere}
+.pill{display:inline-flex;align-items:center;gap:6px;font:700 .72rem/1 var(--f-texto);letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:999px;border:1px solid currentColor}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.n1,.pill.d1{color:var(--d1)} .pill.n2,.pill.d2{color:var(--d2)} .pill.n3,.pill.d3{color:var(--d3)}
+
+.leccion{max-width:70ch}
+.leccion>*+*{margin-top:18px}
+.leccion h3{font-size:1.42rem;margin-top:38px;padding-top:6px}
+.leccion h3:first-child{margin-top:0}
+.leccion p{margin:0}
+.leccion p+p{margin-top:12px}
+.leccion strong{font-weight:700}
+.leccion em{font-style:italic}
+.lista{margin:0;padding-left:1.2em;display:grid;gap:7px}
+.lista li::marker{color:var(--granate)}
+.pasos{list-style:none;margin:0;padding:0;counter-reset:p;display:grid;gap:10px}
+.pasos li{counter-increment:p;display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start}
+.pasos li::before{content:counter(p);width:28px;height:28px;border-radius:50%;background:var(--granate-suave);color:var(--granate);font:700 .85rem/28px var(--f-texto);text-align:center}
+
+.norma{margin:0;background:var(--superficie);border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+.norma figcaption{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:space-between;align-items:center;padding:9px 16px;border-bottom:1px solid var(--linea);background:var(--superficie-2)}
+.norma figcaption .ref{font:500 .8rem/1.3 var(--f-cita);color:var(--granate)}
+.norma blockquote{margin:0;padding:14px 18px 16px;font:400 1.06rem/1.6 var(--f-titulo);color:var(--tinta)}
+.caja{border-radius:10px;padding:16px 18px;border:1px solid var(--linea);background:var(--superficie)}
+.caja>.lbl{margin-bottom:6px}
+.caja h4{font-size:1.08rem;margin-bottom:6px}
+.caja ul{margin:0;padding-left:1.15em;display:grid;gap:6px}
+.caja.ejemplo{background:var(--superficie-2);border-color:transparent}
+.caja.ojo{background:var(--granate-suave);border-color:transparent}
+.caja.ojo>.lbl{color:var(--granate)}
+.caja.clave{background:var(--ok-suave);border-color:transparent}
+.caja.clave>.lbl{color:var(--ok)}
+.caja.juris{background:var(--oro-suave);border-color:transparent}
+.caja.juris>.lbl{color:var(--oro)}
+.doctrina{padding:4px 0 4px 18px;border-left:3px solid var(--oro)}
+.doctrina .lbl{color:var(--oro);margin-bottom:4px}
+.doctrina p{font-family:var(--f-titulo);font-size:1.04rem}
+.tabla-env{overflow-x:auto;border:1px solid var(--linea);border-radius:10px;background:var(--superficie)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:520px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--linea)}
+th{font-weight:700;background:var(--superficie-2);font-size:.82rem;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+
+/* Pestañas */
+.pestanas{display:flex;gap:4px;border-bottom:1px solid var(--linea);margin-bottom:28px;overflow-x:auto}
+.pestanas a{padding:10px 14px 11px;text-decoration:none;color:var(--tinta-2);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.pestanas a:hover{color:var(--tinta)}
+.pestanas a.activo{color:var(--granate);border-bottom-color:var(--granate)}
+.pestanas a .num{font-weight:600;color:var(--tinta-3);margin-left:4px}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 18px;border-radius:8px;border:1px solid var(--granate);background:var(--granate);color:var(--sobre-granate);font-weight:700;font-size:.95rem;cursor:pointer;text-decoration:none;transition:background .15s}
+.btn:hover{background:var(--granate-hover);border-color:var(--granate-hover);color:var(--sobre-granate)}
+.btn.sec{background:transparent;color:var(--granate)}
+.btn.sec:hover{background:var(--granate-suave);color:var(--granate)}
+.btn.neutro{background:var(--superficie);color:var(--tinta);border-color:var(--linea)}
+.btn.neutro:hover{background:var(--superficie-2);color:var(--tinta)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.acciones{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* Ejercicios */
+.grupo-dif{margin-top:34px}
+.grupo-dif:first-of-type{margin-top:0}
+.grupo-dif>header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:14px}
+.grupo-dif>header h3{font-size:1.3rem}
+.grupo-dif>header p{margin:0;color:var(--tinta-2);font-size:.92rem;flex-basis:100%}
+.ejs{display:grid;gap:16px;max-width:78ch}
+.ej{background:var(--superficie);border:1px solid var(--linea);border-radius:12px;padding:20px 20px 18px;display:grid;gap:14px}
+.ej.ok{border-color:var(--ok)}
+.ej.mal{border-color:var(--error)}
+.ej-cab{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.ej-cab .n{font:700 .82rem/1 var(--f-texto);color:var(--tinta-3)}
+.ej-cab .tipo{font-size:.8rem;color:var(--tinta-3)}
+.ej-cab .estado{margin-left:auto;font-size:.8rem;font-weight:700}
+.ej-cab .estado.ok{color:var(--ok)} .ej-cab .estado.mal{color:var(--error)}
+.caso{background:var(--superficie-2);border-radius:8px;padding:12px 14px;font-size:.98rem}
+.caso .lbl{margin-bottom:4px}
+.preg{font-weight:600;font-size:1.03rem;margin:0}
+.opciones{display:grid;gap:8px}
+.op{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:11px 14px;border:1px solid var(--linea);border-radius:8px;background:var(--superficie);cursor:pointer;line-height:1.45;font-size:.97rem}
+.op:hover{border-color:var(--tinta-3)}
+.op .letra{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--tinta-3);display:grid;place-items:center;font:700 .74rem/1 var(--f-texto);color:var(--tinta-2);margin-top:-1px}
+.op[aria-checked="true"]{border-color:var(--granate);background:var(--granate-suave)}
+.op[aria-checked="true"] .letra{background:var(--granate);border-color:var(--granate);color:var(--sobre-granate)}
+.op.correcta{border-color:var(--ok);background:var(--ok-suave)}
+.op.correcta .letra{background:var(--ok);border-color:var(--ok);color:var(--superficie)}
+.op.incorrecta{border-color:var(--error);background:var(--error-suave)}
+.op.incorrecta .letra{background:var(--error);border-color:var(--error);color:var(--superficie)}
+.op[disabled]{cursor:default}
+.orden{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.orden li{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border:1px solid var(--linea);border-radius:8px;background:var(--superficie);font-size:.96rem;line-height:1.4}
+.orden li .pos{flex:none;font:700 .8rem/1 var(--f-texto);color:var(--tinta-3);width:18px}
+.orden li .txt{flex:1;min-width:0}
+.orden li .mov{display:flex;gap:4px;flex:none}
+.orden li .mov button{width:34px;height:34px;border-radius:6px;border:1px solid var(--linea);background:var(--superficie-2);cursor:pointer;display:grid;place-items:center}
+.orden li .mov button:hover{border-color:var(--tinta-3)}
+.orden li .mov button[disabled]{opacity:.35;cursor:default}
+.orden li.correcta{border-color:var(--ok);background:var(--ok-suave)}
+.orden li.incorrecta{border-color:var(--error);background:var(--error-suave)}
+.ej textarea{width:100%;min-height:130px;border:1px solid var(--linea);border-radius:8px;padding:12px;font:inherit;font-size:.97rem;background:var(--papel);color:var(--tinta);resize:vertical}
+.retro{border-radius:8px;padding:12px 14px;font-size:.96rem;background:var(--superficie-2)}
+.retro.ok{background:var(--ok-suave)}
+.retro.mal{background:var(--error-suave)}
+.retro .lbl{margin-bottom:4px}
+.retro.ok .lbl{color:var(--ok)} .retro.mal .lbl{color:var(--error)}
+.modelo{border-top:1px dashed var(--linea);padding-top:12px;display:grid;gap:10px;font-size:.97rem}
+.modelo ul{margin:0;padding-left:1.15em;display:grid;gap:4px}
+.autoeval{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.autoeval span{font-size:.9rem;color:var(--tinta-2);margin-right:4px}
+
+/* Navegación entre temas */
+.navtemas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;margin-top:48px;max-width:78ch}
+.navtemas a{display:block;padding:14px 16px;border:1px solid var(--linea);border-radius:10px;text-decoration:none;color:var(--tinta);background:var(--superficie)}
+.navtemas a:hover{border-color:var(--granate)}
+.navtemas a.sig{text-align:right}
+.navtemas a strong{display:block;font-family:var(--f-titulo);font-size:1.05rem;font-weight:600;margin-top:3px;line-height:1.3}
+
+/* Inicio */
+.portada{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:32px;align-items:start;margin-bottom:48px}
+@media (max-width:1100px){ .portada{grid-template-columns:minmax(0,1fr)} }
+.portada h1{font-size:clamp(2.1rem,1.4rem + 2.8vw,3.3rem);font-weight:600;line-height:1.08;margin:10px 0 16px;max-width:17ch}
+.portada h1 em{font-style:italic;color:var(--granate);font-weight:500}
+.cifras{display:flex;flex-wrap:wrap;gap:10px 28px;margin:22px 0 26px;padding:14px 0;border-block:1px solid var(--linea)}
+.cifras div{display:grid}
+.cifras b{font:600 1.7rem/1.1 var(--f-titulo)}
+.cifras span{font-size:.85rem;color:var(--tinta-2)}
+.norma-dia{background:var(--superficie);border:1px solid var(--linea);border-radius:12px;padding:20px;display:grid;gap:10px}
+.norma-dia .ref{font:500 .82rem var(--f-cita);color:var(--granate)}
+.norma-dia blockquote{margin:0;font:400 1.05rem/1.6 var(--f-titulo)}
+.norma-dia a{font-weight:600;font-size:.92rem}
+.seccion{margin-top:52px}
+.seccion>h2{font-size:1.6rem;margin-bottom:6px}
+.seccion>p.sub{color:var(--tinta-2);margin:0 0 20px;max-width:66ch}
+.niveles{list-style:none;margin:0;padding:0;display:grid;gap:0;border-top:1px solid var(--linea)}
+.nivel{display:grid;grid-template-columns:64px minmax(0,1fr);gap:18px;padding:22px 0;border-bottom:1px solid var(--linea)}
+.nivel .num-n{font:600 2.2rem/1 var(--f-titulo);color:var(--granate)}
+.nivel h3{font-size:1.25rem}
+.nivel .ciclo{font-size:.85rem;color:var(--tinta-3);margin:2px 0 10px}
+.nivel p{margin:0 0 12px;color:var(--tinta-2);font-size:.96rem;max-width:66ch}
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px}
+.mod-tarj{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--linea);border-radius:10px;background:var(--superficie);text-decoration:none;color:var(--tinta)}
+.mod-tarj:hover{border-color:var(--granate);color:var(--tinta)}
+.mod-tarj strong{font-family:var(--f-titulo);font-weight:600;font-size:1.02rem;line-height:1.25}
+.mod-tarj small{color:var(--tinta-3);font-size:.82rem}
+.barra-prog{height:5px;border-radius:3px;background:var(--superficie-2);overflow:hidden}
+.barra-prog i{display:block;height:100%;background:var(--ok);border-radius:3px}
+@media (max-width:560px){ .nivel{grid-template-columns:minmax(0,1fr);gap:6px} .nivel .num-n{font-size:1.5rem} }
+.metodo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;counter-reset:m}
+.metodo li{counter-increment:m;padding:16px 18px;border-radius:10px;background:var(--superficie-2)}
+.metodo li::before{content:"Paso " counter(m);display:block;font:700 .7rem/1 var(--f-texto);letter-spacing:.09em;text-transform:uppercase;color:var(--granate);margin-bottom:8px}
+.metodo li strong{display:block;font-family:var(--f-titulo);font-size:1.08rem;font-weight:600;margin-bottom:4px}
+.metodo li span{font-size:.93rem;color:var(--tinta-2)}
+.aviso{margin-top:52px;padding:16px 18px;border-radius:10px;border:1px dashed var(--linea);font-size:.92rem;color:var(--tinta-2);max-width:78ch}
+.aviso strong{color:var(--tinta)}
+
+/* Módulo */
+.temas-lista{list-style:none;margin:0;padding:0;display:grid;gap:10px;max-width:84ch}
+.tema-fila{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 18px;border:1px solid var(--linea);border-radius:12px;background:var(--superficie);text-decoration:none;color:var(--tinta)}
+.tema-fila:hover{border-color:var(--granate);color:var(--tinta)}
+.tema-fila .i{font:600 1.35rem/1 var(--f-titulo);color:var(--tinta-3);text-align:center}
+.tema-fila h3{font-size:1.12rem;margin-bottom:4px}
+.tema-fila p{margin:0;font-size:.92rem;color:var(--tinta-2);line-height:1.45}
+.tema-fila .lado{display:grid;gap:6px;justify-items:end;font-size:.82rem;color:var(--tinta-3);min-width:96px}
+.tema-fila .lado .barra-prog{width:96px}
+@media (max-width:620px){ .tema-fila{grid-template-columns:minmax(0,1fr)} .tema-fila .i{display:none} .tema-fila .lado{justify-items:start} }
+.dos-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;margin-top:40px;max-width:84ch}
+.dos-col .caja h3{font-size:1.1rem;margin-bottom:10px}
+.biblio{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:.94rem}
+.biblio li{line-height:1.4}
+.biblio li b{font-weight:600}
+.biblio li i{color:var(--tinta-2)}
+
+/* Examen, glosario, progreso */
+.panel{background:var(--superficie);border:1px solid var(--linea);border-radius:12px;padding:20px;max-width:84ch}
+.sel-mods{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+.sel-mods label{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--linea);border-radius:999px;cursor:pointer;font-size:.9rem;background:var(--superficie)}
+.sel-mods label:has(input:checked){border-color:var(--granate);background:var(--granate-suave);color:var(--granate);font-weight:600}
+.sel-mods input{accent-color:var(--granate)}
+.campo{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.campo select{height:40px;border-radius:8px;border:1px solid var(--linea);background:var(--papel);color:var(--tinta);padding:0 10px;font:inherit}
+.marcador{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px;max-width:78ch}
+.marcador .barra-prog{flex:1;min-width:120px}
+.resultado-ex{display:grid;gap:8px;margin-bottom:20px}
+.resultado-ex b{font:600 3rem/1 var(--f-titulo)}
+.filtro{width:100%;max-width:420px;height:42px;border-radius:8px;border:1px solid var(--linea);background:var(--superficie);color:var(--tinta);padding:0 12px;font:inherit;margin-bottom:24px}
+.glos-letra{font:600 1.5rem/1 var(--f-titulo);color:var(--granate);margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--linea);max-width:84ch}
+.glos{margin:0;display:grid;gap:14px;max-width:84ch}
+.glos div{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:4px 20px}
+.glos dt{font-weight:700}
+.glos dd{margin:0;color:var(--tinta-2)}
+.glos dd a{font-size:.85rem;overflow-wrap:anywhere}
+.glos dt,.glos dd{min-width:0;overflow-wrap:break-word}
+@media (max-width:620px){ .glos div{grid-template-columns:minmax(0,1fr)} }
+.tabla-prog td:nth-child(n+2),.tabla-prog th:nth-child(n+2){text-align:right}
+.confirmar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-radius:8px;background:var(--error-suave);margin-top:12px}
+.enlaces-of{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px;max-width:84ch}
+.enlaces-of a{display:block;padding:14px 16px;border:1px solid var(--linea);border-radius:10px;background:var(--superficie);text-decoration:none;color:var(--tinta)}
+.enlaces-of a:hover{border-color:var(--granate);color:var(--tinta)}
+.enlaces-of strong{display:block;font-weight:700}
+.enlaces-of small{color:var(--tinta-2);font-size:.86rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="barra-int">
+    <button class="btn-menu" id="btn-menu" aria-label="Abrir la ruta de estudio" aria-controls="ruta" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <a class="marca" href="#inicio"><span class="sello" aria-hidden="true">§</span><span class="txt">Aula de Derecho Peruano</span></a>
+    <div class="buscador" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <label class="sr" for="q">Buscar temas, normas o términos</label>
+      <input id="q" type="search" autocomplete="off" placeholder="Buscar: nulidad, amparo, art. 1969…" aria-controls="resultados" aria-expanded="false">
+      <div class="resultados" id="resultados" role="listbox" hidden></div>
+    </div>
+  </div>
+</header>
+<div class="velo" id="velo"></div>
+<div class="marco">
+  <nav class="ruta" id="ruta" aria-label="Ruta de estudio"></nav>
+  <main class="vista" id="vista" tabindex="-1" aria-live="polite"></main>
+</div>
+
+<!--DATOS-->
+<script src="data/01-introduccion.js"></script>
+<script src="data/02-constitucional.js"></script>
+<script src="data/03-personas.js"></script>
+<script src="data/04-acto-juridico.js"></script>
+<script src="data/05-obligaciones.js"></script>
+<script src="data/06-contratos.js"></script>
+<script src="data/07-reales.js"></script>
+<script src="data/08-familia.js"></script>
+<script src="data/09-responsabilidad.js"></script>
+<script src="data/10-penal-general.js"></script>
+<script src="data/11-penal-especial.js"></script>
+<script src="data/12-procesal-civil.js"></script>
+<script src="data/13-procesal-penal.js"></script>
+<script src="data/14-procesal-constitucional.js"></script>
+<script src="data/15-administrativo.js"></script>
+<script src="data/16-laboral.js"></script>
+<script src="data/17-tributario.js"></script>
+<script src="data/18-empresarial.js"></script>
+<script src="data/19-internacional.js"></script>
+<script src="data/20-argumentacion.js"></script>
+<script src="data/21-practica.js"></script>
+<!--/DATOS-->
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Estructura de niveles ---------- */
+const NIVELES=[
+  {n:1,nombre:'Fundamentos',ciclo:'Ciclos I – II',desc:'Qué es el Derecho, de dónde salen las normas, cómo se ordenan y cómo se interpretan. Es la base de todo lo demás.'},
+  {n:2,nombre:'Constitución y persona',ciclo:'Ciclos II – IV',desc:'La Constitución de 1993, los derechos fundamentales, el sujeto de derecho y el acto jurídico.'},
+  {n:3,nombre:'Derecho civil patrimonial y familiar',ciclo:'Ciclos IV – VII',desc:'Obligaciones, contratos, bienes, familia, sucesiones y responsabilidad civil: el núcleo del Código Civil de 1984.'},
+  {n:4,nombre:'Derecho penal',ciclo:'Ciclos IV – VII',desc:'Teoría del delito, consecuencias jurídicas y los delitos más frecuentes del Código Penal de 1991.'},
+  {n:5,nombre:'Derecho procesal',ciclo:'Ciclos VII – IX',desc:'Cómo se tramitan los conflictos: proceso civil, proceso penal acusatorio y procesos constitucionales.'},
+  {n:6,nombre:'Derecho público y empresarial',ciclo:'Ciclos VII – X',desc:'La Administración Pública, el trabajo, los tributos, la empresa y el orden internacional.'},
+  {n:7,nombre:'Especialización y práctica',ciclo:'Ciclos X – XII',desc:'Argumentación, precedentes, litigación oral, arbitraje, redacción jurídica y ética profesional.'}
+];
+const NV_TEMA={1:'Básico',2:'Intermedio',3:'Avanzado'};
+const DIF={1:'Fácil',2:'Intermedio',3:'Difícil'};
+const DIF_DESC={1:'Reconocer conceptos y reglas básicas.',2:'Aplicar la norma a supuestos concretos.',3:'Resolver casos complejos, argumentar y relacionar instituciones.'};
+const TIPO={om:'Opción múltiple',vf:'Verdadero o falso',caso:'Caso práctico',orden:'Ordenar',abierta:'Desarrollo'};
+
+/* ---------- Datos ---------- */
+const MODS=(window.CURSO||[]).slice().sort((a,b)=>a.orden-b.orden);
+const MOD={},TEMA={},TEMAS=[];
+MODS.forEach(m=>{
+  MOD[m.id]=m;
+  m.temas.forEach((t,i)=>{
+    t.mod=m;t.idx=i;TEMAS.push(t);TEMA[t.id]=t;
+    (t.e||[]).forEach((e,j)=>{e.id=t.id+'.'+j;e.tema=t;e.j=j;});
+  });
+});
+const TOTAL_EJ=TEMAS.reduce((s,t)=>s+(t.e||[]).length,0);
+
+/* ---------- Progreso (solo en este navegador) ---------- */
+const CLAVE='aula-derecho-pe-v1';
+let est={ej:{},vistos:{},ultimo:null};
+try{const s=localStorage.getItem(CLAVE);if(s){const o=JSON.parse(s);if(o&&typeof o==='object')est=Object.assign(est,o);}}catch(_){}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify(est));}catch(_){}}
+function marcar(id,v){est.ej[id]=v;guardar();pintarRuta();}
+function progTema(t){let ok=0;const tot=(t.e||[]).length;(t.e||[]).forEach(e=>{if(est.ej[e.id]==='ok')ok++;});return{ok,tot,pct:tot?Math.round(ok*100/tot):0};}
+function progMod(m){let ok=0,tot=0;m.temas.forEach(t=>{const p=progTema(t);ok+=p.ok;tot+=p.tot;});return{ok,tot,pct:tot?Math.round(ok*100/tot):0};}
+
+/* ---------- Utilidades ---------- */
+const $=s=>document.querySelector(s);
+const vista=$('#vista');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const plano=s=>String(s).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+const LETRAS='ABCDEFGH';
+function hash32(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function barajar(arr,semilla){const a=arr.slice();let x=semilla||1;for(let i=a.length-1;i>0;i--){x=(Math.imul(x,1664525)+1013904223)>>>0;const j=x%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function nivelDe(m){return NIVELES.find(n=>n.n===m.nivel)||NIVELES[0];}
+
+/* ---------- Ruta lateral ---------- */
+const ICON={
+  inicio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>',
+  examen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l1 2h3v15H5V6h3z"/><path d="m9 13 2 2 4-4"/></svg>',
+  glosario:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg>',
+  biblioteca:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="m16 5 3.5-1 3 15.5-3.5 1z"/></svg>',
+  progreso:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
+};
+let actual={vista:'inicio',mod:null,tema:null};
+function pintarRuta(){
+  const h=location.hash.slice(1)||'inicio';
+  let html='<div class="ruta-top">';
+  [['inicio','Inicio'],['examen','Examen de práctica'],['glosario','Glosario'],['biblioteca','Biblioteca y fuentes'],['progreso','Mi progreso']].forEach(([k,txt])=>{
+    html+=`<a href="#${k}" class="${h===k?'activo':''}">${ICON[k]}${txt}</a>`;
+  });
+  html+='</div>';
+  NIVELES.forEach(n=>{
+    const ms=MODS.filter(m=>m.nivel===n.n);if(!ms.length)return;
+    html+=`<div class="ruta-nivel"><div class="lbl"><b>Nivel ${n.n}</b>${esc(n.nombre)}</div>`;
+    ms.forEach(m=>{
+      const p=progMod(m);const act=actual.mod===m;
+      html+=`<a class="ruta-mod ${act?'activo':''}" href="#m-${m.id}">${esc(m.n)}<span class="mini"><i style="width:${p.pct}%"></i></span></a>`;
+      if(act){
+        html+='<div class="ruta-temas">';
+        m.temas.forEach(t=>{
+          const pt=progTema(t);const cls=pt.ok===0?'':(pt.ok===pt.tot?'completo':'parcial');
+          html+=`<a href="#t-${t.id}" class="${actual.tema===t?'activo':''}"><span class="pt ${cls}"></span>${esc(t.n)}</a>`;
+        });
+        html+='</div>';
+      }
+    });
+    html+='</div>';
+  });
+  $('#ruta').innerHTML=html;
+}
+
+/* ---------- Menú móvil ---------- */
+const btnMenu=$('#btn-menu'),velo=$('#velo'),rutaEl=$('#ruta');
+function abrirMenu(){rutaEl.classList.add('abierta');velo.classList.add('visible');btnMenu.setAttribute('aria-expanded','true');}
+function cerrarMenu(){rutaEl.classList.remove('abierta');velo.classList.remove('visible');btnMenu.setAttribute('aria-expanded','false');}
+btnMenu.addEventListener('click',()=>rutaEl.classList.contains('abierta')?cerrarMenu():abrirMenu());
+velo.addEventListener('click',cerrarMenu);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarMenu();cerrarRes();}});
+
+/* ---------- Bloques de lección ---------- */
+function bloque(b){
+  const k=b[0];
+  switch(k){
+    case 'p':return `<p>${b[1]}</p>`;
+    case 'h':return `<h3>${b[1]}</h3>`;
+    case 'norma':return `<figure class="norma"><figcaption><span class="lbl">${b[3]==='lit'?'Texto normativo':'Lo que dice la norma (síntesis)'}</span><span class="ref">${b[1]}</span></figcaption><blockquote>${b[2]}</blockquote></figure>`;
+    case 'lista':return `<ul class="lista">${b[1].map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    case 'pasos':return `<ol class="pasos">${b[1].map(x=>`<li><span>${x}</span></li>`).join('')}</ol>`;
+    case 'ej':return `<aside class="caja ejemplo"><div class="lbl">Ejemplo</div><h4>${b[1]}</h4><div>${b[2]}</div></aside>`;
+    case 'ojo':return `<aside class="caja ojo"><div class="lbl">Atención</div><div>${b[1]}</div></aside>`;
+    case 'clave':return `<aside class="caja clave"><div class="lbl">Para recordar</div><ul>${b[1].map(x=>`<li>${x}</li>`).join('')}</ul></aside>`;
+    case 'juris':return `<aside class="caja juris"><div class="lbl">Jurisprudencia</div><h4>${b[1]}</h4><div>${b[2]}</div></aside>`;
+    case 'doc':return `<aside class="doctrina"><div class="lbl">Doctrina · ${b[1]}</div><p>${b[2]}</p></aside>`;
+    case 'tabla':return `<div class="tabla-env"><table><thead><tr>${b[1].map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${b[2].map(f=>`<tr>${f.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    default:return '';
+  }
+}
+
+/* ---------- Ejercicios ---------- */
+const ordenes={};
+function opcionesDe(e){return e.t==='vf'?['Verdadero','Falso']:e.o;}
+function correctaDe(e){return e.t==='vf'?(e.a?0:1):e.a;}
+function ejHTML(e,num,opts){
+  opts=opts||{};
+  const st=est.ej[e.id];
+  const cls=opts.examen?'':(st==='ok'?'ok':st==='mal'?'mal':'');
+  let h=`<article class="ej ${cls}" data-ej="${e.id}">`;
+  h+=`<div class="ej-cab"><span class="n">${num}</span><span class="pill d${e.d}">${DIF[e.d]}</span><span class="tipo">${TIPO[e.t]||''}</span>`;
+  if(!opts.examen&&st) h+=`<span class="estado ${st}">${st==='ok'?'Resuelto':'Por repasar'}</span>`;
+  h+='</div>';
+  if(e.c) h+=`<div class="caso"><div class="lbl">Caso</div>${e.c}</div>`;
+  h+=`<p class="preg">${e.q}</p>`;
+  if(e.t==='om'||e.t==='vf'||e.t==='caso'){
+    h+=`<div class="opciones" role="radiogroup">`;
+    const ops=opcionesDe(e);
+    const perm=e.t==='vf'?ops.map((_,i)=>i):barajar(ops.map((_,i)=>i),hash32(e.id+'|op'));
+    perm.forEach((i,pos)=>{h+=`<button type="button" class="op" role="radio" aria-checked="false" data-i="${i}"><span class="letra">${e.t==='vf'?(i?'F':'V'):LETRAS[pos]}</span><span>${ops[i]}</span></button>`;});
+    h+=`</div><div class="acciones"><button type="button" class="btn" data-acc="comprobar" disabled>Comprobar</button></div><div class="fb" aria-live="polite"></div>`;
+  }else if(e.t==='orden'){
+    if(!ordenes[e.id]) ordenes[e.id]=barajar(e.o.map((_,i)=>i),hash32(e.id));
+    if(ordenes[e.id].every((v,i)=>v===i)&&e.o.length>1) ordenes[e.id].reverse();
+    h+=`<ol class="orden">${ordenLis(e)}</ol><div class="acciones"><button type="button" class="btn" data-acc="comprobar-orden">Comprobar orden</button></div><div class="fb" aria-live="polite"></div>`;
+  }else if(e.t==='abierta'){
+    h+=`<label class="sr" for="r-${e.id.replace(/\W/g,'_')}">Tu respuesta</label><textarea id="r-${e.id.replace(/\W/g,'_')}" placeholder="Escribe tu respuesta: identifica el problema, cita la norma aplicable y concluye."></textarea>`;
+    h+=`<div class="acciones"><button type="button" class="btn sec" data-acc="modelo">Ver respuesta modelo</button></div><div class="fb"></div>`;
+  }
+  h+='</article>';
+  return h;
+}
+function ordenLis(e){
+  const ord=ordenes[e.id];
+  return ord.map((idx,pos)=>`<li data-idx="${idx}"><span class="pos">${pos+1}</span><span class="txt">${e.o[idx]}</span><span class="mov"><button type="button" data-acc="subir" data-pos="${pos}" aria-label="Subir" ${pos===0?'disabled':''}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button><button type="button" data-acc="bajar" data-pos="${pos}" aria-label="Bajar" ${pos===ord.length-1?'disabled':''}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></span></li>`).join('');
+}
+function buscarEj(id){const [tid,j]=id.split('.');const t=TEMA[tid];return t?t.e[+j]:null;}
+
+let enExamen=null;
+vista.addEventListener('click',ev=>{
+  const op=ev.target.closest('.op');
+  if(op&&!op.disabled){
+    const art=op.closest('.ej');
+    art.querySelectorAll('.op').forEach(b=>b.setAttribute('aria-checked','false'));
+    op.setAttribute('aria-checked','true');
+    const c=art.querySelector('[data-acc="comprobar"]');if(c)c.disabled=false;
+    return;
+  }
+  const b=ev.target.closest('[data-acc]');if(!b)return;
+  const acc=b.dataset.acc;const art=b.closest('.ej');
+  const e=art?buscarEj(art.dataset.ej):null;
+  if(acc==='comprobar'&&e){
+    const sel=art.querySelector('.op[aria-checked="true"]');if(!sel)return;
+    const i=+sel.dataset.i,ok=i===correctaDe(e);
+    art.querySelectorAll('.op').forEach(x=>{x.disabled=true;const k=+x.dataset.i;if(k===correctaDe(e))x.classList.add('correcta');else if(k===i)x.classList.add('incorrecta');});
+    art.querySelector('.fb').innerHTML=`<div class="retro ${ok?'ok':'mal'}"><div class="lbl">${ok?'Correcto':'Incorrecto'}</div>${e.x||''}</div>`;
+    b.outerHTML=`<button type="button" class="btn neutro" data-acc="reintentar">${enExamen?'':'Reintentar'}</button>`;
+    if(enExamen){art.querySelector('[data-acc="reintentar"]').remove();examenResponder(ok);}
+    else{marcar(e.id,ok?'ok':'mal');art.classList.remove('ok','mal');art.classList.add(ok?'ok':'mal');actualizarEstado(art,ok?'ok':'mal');}
+    return;
+  }
+  if(acc==='reintentar'&&e){
+    art.outerHTML=ejHTML(e,art.querySelector('.ej-cab .n').textContent);
+    return;
+  }
+  if((acc==='subir'||acc==='bajar')&&e){
+    const pos=+b.dataset.pos,ord=ordenes[e.id],dest=acc==='subir'?pos-1:pos+1;
+    if(dest<0||dest>=ord.length)return;
+    [ord[pos],ord[dest]]=[ord[dest],ord[pos]];
+    art.querySelector('.orden').innerHTML=ordenLis(e);
+    art.querySelector('.fb').innerHTML='';
+    const btn=art.querySelector(`[data-acc="${acc}"][data-pos="${dest}"]`)||art.querySelector(`[data-pos="${dest}"]`);if(btn)btn.focus();
+    return;
+  }
+  if(acc==='comprobar-orden'&&e){
+    const ord=ordenes[e.id];let aciertos=0;
+    art.querySelectorAll('.orden li').forEach((li,pos)=>{const ok=ord[pos]===pos;if(ok)aciertos++;li.classList.toggle('correcta',ok);li.classList.toggle('incorrecta',!ok);});
+    const ok=aciertos===ord.length;
+    let fb=`<div class="retro ${ok?'ok':'mal'}"><div class="lbl">${ok?'Orden correcto':'Hay '+(ord.length-aciertos)+' elemento(s) fuera de lugar'}</div>`;
+    if(ok)fb+=(e.x||'');else fb+='Revisa los elementos marcados en rojo y vuelve a intentarlo. <button type="button" class="btn neutro" data-acc="ver-orden" style="margin-top:10px;min-height:34px">Ver la secuencia correcta</button>';
+    fb+='</div>';
+    art.querySelector('.fb').innerHTML=fb;
+    marcar(e.id,ok?'ok':(est.ej[e.id]==='ok'?'ok':'mal'));actualizarEstado(art,est.ej[e.id]);
+    return;
+  }
+  if(acc==='ver-orden'&&e){
+    art.querySelector('.fb').innerHTML=`<div class="retro"><div class="lbl">Secuencia correcta</div><ol style="margin:0;padding-left:1.2em">${e.o.map(x=>`<li>${x}</li>`).join('')}</ol>${e.x?`<p style="margin:8px 0 0">${e.x}</p>`:''}</div>`;
+    return;
+  }
+  if(acc==='modelo'&&e){
+    b.remove();
+    art.querySelector('.fb').innerHTML=`<div class="modelo"><div><div class="lbl">Respuesta modelo</div>${e.m}</div>${e.k?`<div><div class="lbl">Tu respuesta debería incluir</div><ul>${e.k.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}<div class="autoeval"><span>¿Cómo te fue?</span><button type="button" class="btn" data-acc="auto-ok">La resolví bien</button><button type="button" class="btn neutro" data-acc="auto-mal">Debo repasar</button></div></div>`;
+    return;
+  }
+  if((acc==='auto-ok'||acc==='auto-mal')&&e){
+    const v=acc==='auto-ok'?'ok':'mal';marcar(e.id,v);art.classList.remove('ok','mal');art.classList.add(v);actualizarEstado(art,v);
+    b.parentElement.innerHTML=`<span>${v==='ok'?'Registrado como resuelto.':'Registrado para repasar. Vuelve a la lección y reintenta.'}</span>`;
+    return;
+  }
+  if(acc==='ex-iniciar'){examenIniciar();return;}
+  if(acc==='ex-sig'){enExamen.i++;examenPintar();return;}
+  if(acc==='ex-otro'){enExamen=null;vExamen();return;}
+  if(acc==='todos'){document.querySelectorAll('.sel-mods input').forEach(x=>x.checked=true);return;}
+  if(acc==='ninguno'){document.querySelectorAll('.sel-mods input').forEach(x=>x.checked=false);return;}
+  if(acc==='reiniciar'){b.closest('.panel').querySelector('.zona-conf').innerHTML=`<div class="confirmar"><span>Se borrarán todas tus respuestas guardadas en este navegador.</span><button type="button" class="btn" data-acc="reiniciar-si">Sí, borrar mi progreso</button><button type="button" class="btn neutro" data-acc="reiniciar-no">Cancelar</button></div>`;return;}
+  if(acc==='reiniciar-si'){est={ej:{},vistos:{},ultimo:null};guardar();pintarRuta();vProgreso();return;}
+  if(acc==='reiniciar-no'){b.closest('.zona-conf').innerHTML='';return;}
+});
+function actualizarEstado(art,v){
+  const cab=art.querySelector('.ej-cab');let s=cab.querySelector('.estado');
+  if(!s){s=document.createElement('span');cab.appendChild(s);}
+  s.className='estado '+v;s.textContent=v==='ok'?'Resuelto':'Por repasar';
+}
+
+/* ---------- Vistas ---------- */
+function montar(html,opts){
+  vista.innerHTML=html;
+  pintarRuta();
+  if(!(opts&&opts.sinFoco))vista.focus({preventScroll:true});
+}
+function normaDelDia(){
+  const ns=[];TEMAS.forEach(t=>(t.b||[]).forEach(b=>{if(b[0]==='norma'&&b[3]==='lit')ns.push({b,t});}));
+  if(!ns.length)return null;
+  const d=new Date();const k=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);
+  return ns[k%ns.length];
+}
+function vInicio(){
+  actual={vista:'inicio',mod:null,tema:null};
+  const ult=est.ultimo&&TEMA[est.ultimo];
+  const primero=TEMAS[0];
+  const nd=normaDelDia();
+  let resueltos=0;Object.values(est.ej).forEach(v=>{if(v==='ok')resueltos++;});
+  let h=`<section class="portada"><div>
+    <div class="lbl">Ruta de estudio · Derecho peruano</div>
+    <h1>Del <em>artículo</em> al caso, paso a paso</h1>
+    <p class="entrada">Un curso ordenado como la carrera de Derecho en las universidades peruanas: empiezas con la teoría general, pasas por la Constitución, el Código Civil y el Código Penal, y terminas litigando, argumentando y resolviendo casos complejos. Cada tema trae su lección, las normas que debes conocer y ejercicios de fácil a difícil.</p>
+    <div class="cifras"><div><b class="num">${MODS.length}</b><span>módulos</span></div><div><b class="num">${TEMAS.length}</b><span>temas</span></div><div><b class="num">${TOTAL_EJ}</b><span>ejercicios</span></div><div><b class="num">${resueltos}</b><span>resueltos por ti</span></div></div>
+    <div class="acciones">${ult?`<a class="btn" href="#t-${ult.id}">Continuar: ${esc(ult.n)}</a><a class="btn sec" href="#t-${primero.id}">Ir al primer tema</a>`:`<a class="btn" href="#t-${primero.id}">Empezar por el Nivel 1</a><a class="btn sec" href="#examen">Probar un examen</a>`}</div>
+  </div>`;
+  if(nd){h+=`<aside class="norma-dia"><div class="lbl">Norma del día</div><div class="ref">${nd.b[1]}</div><blockquote>${nd.b[2]}</blockquote><a href="#t-${nd.t.id}">Estudiarla en «${esc(nd.t.n)}» →</a></aside>`;}
+  h+=`</section>`;
+  h+=`<section class="seccion"><h2>Cómo estudiar aquí</h2><p class="sub">El método que siguen los buenos cursos de Derecho: primero la norma y su porqué, luego la aplicación, al final el caso difícil.</p>
+  <ol class="metodo"><li><strong>Lee la lección</strong><span>Conceptos, artículo aplicable, doctrina y jurisprudencia, con ejemplos peruanos.</span></li><li><strong>Practica de fácil a difícil</strong><span>Reconoce la regla, aplícala a un supuesto y luego resuelve un caso con varios problemas.</span></li><li><strong>Mídete con un examen</strong><span>Preguntas aleatorias de los módulos que elijas. Lo que falles te lleva de vuelta al tema.</span></li></ol></section>`;
+  h+=`<section class="seccion"><h2>La ruta completa</h2><p class="sub">Siete niveles que siguen el orden de una malla curricular de Derecho. Puedes saltar a cualquier módulo, pero cada nivel asume el anterior.</p><ol class="niveles">`;
+  NIVELES.forEach(n=>{
+    const ms=MODS.filter(m=>m.nivel===n.n);if(!ms.length)return;
+    h+=`<li class="nivel"><div class="num-n num">${n.n}</div><div><h3>${esc(n.nombre)}</h3><div class="ciclo">${n.ciclo}</div><p>${n.desc}</p><div class="mods">`;
+    ms.forEach(m=>{const p=progMod(m);h+=`<a class="mod-tarj" href="#m-${m.id}"><strong>${esc(m.n)}</strong><small class="num">${m.temas.length} temas · ${p.tot} ejercicios · ${p.pct}%</small><span class="barra-prog"><i style="width:${p.pct}%"></i></span></a>`;});
+    h+=`</div></div></li>`;
+  });
+  h+=`</ol></section>`;
+  h+=`<p class="aviso"><strong>Material educativo, actualizado a noviembre de 2026.</strong> Las normas peruanas se modifican con frecuencia. Antes de usar un artículo en un escrito o examen, confirma su texto vigente en el <a href="https://spij.minjus.gob.pe" target="_blank" rel="noopener">SPIJ</a> o en <a href="https://busquedas.elperuano.pe" target="_blank" rel="noopener">El Peruano</a>. Tu progreso se guarda solo en este navegador.</p>`;
+  montar(h);
+}
+function vModulo(m){
+  actual={vista:'modulo',mod:m,tema:null};
+  const n=nivelDe(m),p=progMod(m);
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a><span>/</span><span>Nivel ${n.n} · ${esc(n.nombre)}</span></nav>`;
+  h+=`<h1 class="titulo-pag">${esc(m.n)}</h1><p class="entrada">${m.desc}</p>`;
+  h+=`<div class="meta"><span class="chip">${esc(m.ciclo||n.ciclo)}</span><span class="chip num">${m.temas.length} temas</span><span class="chip num">${p.ok}/${p.tot} ejercicios resueltos</span></div>`;
+  h+=`<ol class="temas-lista">`;
+  m.temas.forEach((t,i)=>{const pt=progTema(t);h+=`<li><a class="tema-fila" href="#t-${t.id}"><span class="i num">${i+1}</span><div><h3>${esc(t.n)}</h3><p>${t.r}</p></div><div class="lado"><span class="pill n${t.nv}">${NV_TEMA[t.nv]}</span><span class="num">${pt.ok}/${pt.tot} ejercicios</span><span class="barra-prog"><i style="width:${pt.pct}%"></i></span></div></a></li>`;});
+  h+=`</ol>`;
+  h+=`<div class="dos-col"><div class="caja"><h3>Normas base</h3><ul class="biblio">${(m.normas||[]).map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="caja"><h3>Bibliografía de referencia</h3><ul class="biblio">${(m.biblio||[]).map(x=>`<li><b>${x[0]}</b>, <i>${x[1]}</i></li>`).join('')}</ul></div></div>`;
+  montar(h);
+}
+function vTema(t,modo){
+  actual={vista:'tema',mod:t.mod,tema:t};
+  est.ultimo=t.id;est.vistos[t.id]=1;guardar();
+  const m=t.mod,n=nivelDe(m),nEj=(t.e||[]).length;
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a><span>/</span><span>Nivel ${n.n}</span><span>/</span><a href="#m-${m.id}">${esc(m.n)}</a></nav>`;
+  h+=`<h1 class="titulo-pag">${esc(t.n)}</h1><p class="entrada">${t.r}</p>`;
+  h+=`<div class="meta"><span class="pill n${t.nv}">${NV_TEMA[t.nv]}</span>${(t.normas||[]).map(x=>`<span class="chip">${x}</span>`).join('')}</div>`;
+  h+=`<nav class="pestanas" aria-label="Secciones del tema"><a href="#t-${t.id}" class="${modo==='leccion'?'activo':''}">Lección</a><a href="#p-${t.id}" class="${modo==='practica'?'activo':''}">Ejercicios<span class="num">${nEj}</span></a></nav>`;
+  if(modo==='leccion'){
+    h+=`<div class="leccion">${(t.b||[]).map(bloque).join('')}`;
+    if(t.g&&t.g.length)h+=`<h3>Términos del tema</h3><dl class="glos">${t.g.map(g=>`<div><dt>${g[0]}</dt><dd>${g[1]}</dd></div>`).join('')}</dl>`;
+    h+=`</div><div class="acciones" style="margin-top:32px"><a class="btn" href="#p-${t.id}">Practicar este tema (${nEj} ejercicios)</a></div>`;
+  }else{
+    let k=0;
+    [1,2,3].forEach(d=>{
+      const es=(t.e||[]).filter(e=>e.d===d);if(!es.length)return;
+      h+=`<section class="grupo-dif"><header><span class="pill d${d}">${DIF[d]}</span><h3>Nivel ${d}</h3><p>${DIF_DESC[d]}</p></header><div class="ejs">`;
+      es.forEach(e=>{k++;h+=ejHTML(e,'Ejercicio '+k);});
+      h+=`</div></section>`;
+    });
+  }
+  const i=TEMAS.indexOf(t),ant=TEMAS[i-1],sig=TEMAS[i+1];
+  h+=`<nav class="navtemas" aria-label="Otros temas">${ant?`<a href="#t-${ant.id}"><span class="lbl">← Anterior</span><strong>${esc(ant.n)}</strong></a>`:'<span></span>'}${sig?`<a class="sig" href="#t-${sig.id}"><span class="lbl">Siguiente →</span><strong>${esc(sig.n)}</strong></a>`:''}</nav>`;
+  montar(h);
+}
+
+/* Examen */
+function vExamen(){
+  actual={vista:'examen',mod:null,tema:null};enExamen=null;
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a></nav><h1 class="titulo-pag">Examen de práctica</h1><p class="entrada">Preguntas al azar de los módulos que elijas, con corrección inmediata. Al final verás tu nota en escala vigesimal y los temas que conviene repasar.</p>`;
+  h+=`<div class="panel"><div class="lbl">Módulos incluidos</div><div class="sel-mods">`;
+  MODS.forEach(m=>{h+=`<label><input type="checkbox" value="${m.id}" id="exm-${m.id}" checked>${esc(m.n)}</label>`;});
+  h+=`</div><div class="campo"><button type="button" class="btn neutro" data-acc="todos">Marcar todos</button><button type="button" class="btn neutro" data-acc="ninguno">Quitar todos</button></div>`;
+  h+=`<div class="campo"><label for="ex-n">Número de preguntas</label><select id="ex-n"><option value="10">10</option><option value="20" selected>20</option><option value="40">40</option></select><label for="ex-d">Dificultad</label><select id="ex-d"><option value="0">Todas</option><option value="1">Solo fáciles</option><option value="2">Solo intermedias</option><option value="3">Solo difíciles</option></select></div>`;
+  h+=`<div class="acciones"><button type="button" class="btn" data-acc="ex-iniciar">Empezar examen</button><span class="aviso-ex" style="color:var(--error);font-size:.92rem"></span></div></div>`;
+  montar(h);
+}
+function examenIniciar(){
+  const ids=[...document.querySelectorAll('.sel-mods input:checked')].map(x=>x.value);
+  const n=+$('#ex-n').value,d=+$('#ex-d').value;
+  let pool=[];ids.forEach(id=>MOD[id].temas.forEach(t=>(t.e||[]).forEach(e=>{if(['om','vf','caso'].includes(e.t)&&(!d||e.d===d))pool.push(e);})));
+  if(!pool.length){document.querySelector('.aviso-ex').textContent='Elige al menos un módulo con preguntas para esa dificultad.';return;}
+  pool=barajar(pool,(Math.random()*4294967295)>>>0).slice(0,n);
+  enExamen={p:pool,i:0,ok:0,fallos:[]};examenPintar();
+}
+function examenPintar(){
+  const ex=enExamen;
+  if(ex.i>=ex.p.length){
+    const nota=Math.round(ex.ok*20/ex.p.length*10)/10;
+    const temas=[...new Set(ex.fallos.map(e=>e.tema))];
+    let h=`<nav class="miga"><a href="#inicio">Inicio</a><span>/</span><a href="#examen">Examen de práctica</a></nav><h1 class="titulo-pag">Resultado</h1>`;
+    h+=`<div class="panel"><div class="resultado-ex"><div class="lbl">Nota vigesimal</div><b class="num" style="color:${nota>=11?'var(--ok)':'var(--error)'}">${nota.toFixed(1)}</b><span class="num">${ex.ok} de ${ex.p.length} respuestas correctas · ${nota>=11?'Aprobado':'Desaprobado'} (nota mínima aprobatoria: 11)</span></div>`;
+    if(temas.length){h+=`<div class="lbl" style="margin:14px 0 8px">Temas para repasar</div><ul class="biblio">${temas.map(t=>`<li><a href="#t-${t.id}">${esc(t.n)}</a> <i>· ${esc(t.mod.n)}</i></li>`).join('')}</ul>`;}
+    else h+=`<p>Sin errores. Prueba con más preguntas o solo con las difíciles.</p>`;
+    h+=`<div class="acciones" style="margin-top:20px"><button type="button" class="btn" data-acc="ex-otro">Hacer otro examen</button></div></div>`;
+    enExamen=null;montar(h);return;
+  }
+  const e=ex.p[ex.i];
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a><span>/</span><a href="#examen">Examen de práctica</a></nav>`;
+  h+=`<div class="marcador"><span class="num"><b>Pregunta ${ex.i+1}</b> de ${ex.p.length}</span><span class="barra-prog"><i style="width:${Math.round(ex.i*100/ex.p.length)}%"></i></span><span class="num">${ex.ok} correctas</span></div>`;
+  h+=`<div class="ejs">${ejHTML(e,esc(e.tema.mod.n)+' · '+esc(e.tema.n),{examen:true})}</div>`;
+  enExamen=ex;montar(h);
+}
+function examenResponder(ok){
+  const ex=enExamen,e=ex.p[ex.i];
+  if(ok)ex.ok++;else ex.fallos.push(e);
+  marcar(e.id,ok?'ok':(est.ej[e.id]==='ok'?'ok':'mal'));
+  const acc=vista.querySelector('.ej .acciones');
+  acc.innerHTML=`<button type="button" class="btn" data-acc="ex-sig">${ex.i+1<ex.p.length?'Siguiente pregunta':'Ver resultado'}</button>`;
+  acc.querySelector('button').focus();
+}
+
+/* Glosario */
+function todosTerminos(){
+  const out=[];TEMAS.forEach(t=>(t.g||[]).forEach(g=>out.push({t:g[0],d:g[1],tema:t})));
+  out.sort((a,b)=>a.t.localeCompare(b.t,'es',{sensitivity:'base'}));return out;
+}
+function vGlosario(){
+  actual={vista:'glosario',mod:null,tema:null};
+  const ts=todosTerminos();
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a></nav><h1 class="titulo-pag">Glosario jurídico</h1><p class="entrada">${ts.length} términos usados en el curso, con el tema donde se explican.</p>`;
+  h+=`<label class="sr" for="filtro-g">Filtrar términos</label><input class="filtro" id="filtro-g" type="search" placeholder="Filtrar: posesión, dolo, casación…"><div id="glos-lista">${glosLista(ts)}</div>`;
+  montar(h);
+  $('#filtro-g').addEventListener('input',ev=>{const q=norm(ev.target.value.trim());$('#glos-lista').innerHTML=glosLista(q?ts.filter(x=>norm(x.t+' '+x.d).includes(q)):ts);});
+}
+function glosLista(ts){
+  if(!ts.length)return '<p>No hay términos que coincidan. Prueba con otra palabra.</p>';
+  let h='',letra='';
+  ts.forEach(x=>{const l=norm(x.t)[0].toUpperCase();if(l!==letra){if(letra)h+='</dl>';letra=l;h+=`<h2 class="glos-letra">${l}</h2><dl class="glos">`;}h+=`<div><dt>${x.t}</dt><dd>${x.d} <a href="#t-${x.tema.id}">→ ${esc(x.tema.n)}</a></dd></div>`;});
+  return h+'</dl>';
+}
+
+/* Biblioteca */
+function vBiblioteca(){
+  actual={vista:'biblioteca',mod:null,tema:null};
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a></nav><h1 class="titulo-pag">Biblioteca y fuentes</h1><p class="entrada">Las obras de referencia que se usan en las facultades de Derecho del Perú (UNMSM, PUCP, Universidad de Lima, Universidad del Pacífico, entre otras) y las fuentes oficiales para consultar el texto vigente de las normas.</p>`;
+  h+=`<h2 style="font-size:1.4rem;margin:8px 0 14px">Fuentes oficiales</h2><div class="enlaces-of">
+   <a href="https://spij.minjus.gob.pe" target="_blank" rel="noopener"><strong>SPIJ</strong><small>Sistema Peruano de Información Jurídica (MINJUSDH): textos actualizados de códigos y leyes.</small></a>
+   <a href="https://busquedas.elperuano.pe" target="_blank" rel="noopener"><strong>El Peruano · Normas legales</strong><small>Diario oficial: publicación de leyes, decretos y resoluciones.</small></a>
+   <a href="https://www.tc.gob.pe" target="_blank" rel="noopener"><strong>Tribunal Constitucional</strong><small>Sentencias, precedentes vinculantes y jurisprudencia constitucional.</small></a>
+   <a href="https://jurisprudencia.pj.gob.pe" target="_blank" rel="noopener"><strong>Poder Judicial · Jurisprudencia</strong><small>Casaciones, plenos casatorios y acuerdos plenarios.</small></a>
+   <a href="https://leyes.congreso.gob.pe" target="_blank" rel="noopener"><strong>Congreso · Archivo de leyes</strong><small>Leyes numeradas y textos consolidados.</small></a>
+   <a href="https://www.tribunalfiscal.gob.pe" target="_blank" rel="noopener"><strong>Tribunal Fiscal</strong><small>Jurisprudencia de observancia obligatoria en materia tributaria.</small></a>
+  </div>`;
+  NIVELES.forEach(n=>{
+    const ms=MODS.filter(m=>m.nivel===n.n);if(!ms.length)return;
+    h+=`<h2 style="font-size:1.4rem;margin:40px 0 4px">Nivel ${n.n} · ${esc(n.nombre)}</h2><div class="dos-col" style="margin-top:14px">`;
+    ms.forEach(m=>{h+=`<div class="caja"><h3><a href="#m-${m.id}" style="color:inherit;text-decoration:none">${esc(m.n)}</a></h3><ul class="biblio">${(m.biblio||[]).map(x=>`<li><b>${x[0]}</b>, <i>${x[1]}</i></li>`).join('')}</ul></div>`;});
+    h+=`</div>`;
+  });
+  montar(h);
+}
+
+/* Progreso */
+function vProgreso(){
+  actual={vista:'progreso',mod:null,tema:null};
+  let ok=0,mal=0;Object.values(est.ej).forEach(v=>{if(v==='ok')ok++;else if(v==='mal')mal++;});
+  const pct=TOTAL_EJ?Math.round(ok*100/TOTAL_EJ):0;
+  let h=`<nav class="miga"><a href="#inicio">Inicio</a></nav><h1 class="titulo-pag">Mi progreso</h1><p class="entrada">Has resuelto <b class="num">${ok}</b> de <b class="num">${TOTAL_EJ}</b> ejercicios (${pct}%). ${mal?`Tienes <b class="num">${mal}</b> marcados para repasar.`:''}</p>`;
+  h+=`<div class="tabla-env" style="max-width:84ch"><table class="tabla-prog"><thead><tr><th>Módulo</th><th>Temas</th><th>Resueltos</th><th>Avance</th></tr></thead><tbody>`;
+  MODS.forEach(m=>{const p=progMod(m);h+=`<tr><td><a href="#m-${m.id}">${esc(m.n)}</a></td><td class="num">${m.temas.length}</td><td class="num">${p.ok}/${p.tot}</td><td class="num">${p.pct}%</td></tr>`;});
+  h+=`</tbody></table></div>`;
+  const pend=TEMAS.filter(t=>(t.e||[]).some(e=>est.ej[e.id]==='mal'));
+  if(pend.length)h+=`<h2 style="font-size:1.4rem;margin:36px 0 12px">Temas con ejercicios por repasar</h2><ul class="biblio" style="max-width:84ch">${pend.map(t=>`<li><a href="#p-${t.id}">${esc(t.n)}</a> <i>· ${esc(t.mod.n)}</i></li>`).join('')}</ul>`;
+  h+=`<div class="panel" style="margin-top:36px"><div class="lbl">Reiniciar</div><p style="margin:6px 0 12px">Tu progreso se guarda solo en este navegador. Si estudias en otro dispositivo, empezarás de cero allí.</p><button type="button" class="btn neutro" data-acc="reiniciar">Borrar mi progreso</button><div class="zona-conf"></div></div>`;
+  montar(h);
+}
+
+/* ---------- Buscador ---------- */
+const INDICE=[];
+MODS.forEach(m=>INDICE.push({tipo:'Módulo',titulo:m.n,sub:plano(m.desc),href:'#m-'+m.id,a:norm(m.n),b:norm(plano(m.desc))}));
+TEMAS.forEach(t=>{
+  const cuerpo=(t.b||[]).map(b=>b.slice(1).map(x=>Array.isArray(x)?x.flat().join(' '):String(x||'')).join(' ')).join(' ');
+  INDICE.push({tipo:t.mod.n,titulo:t.n,sub:plano(t.r),href:'#t-'+t.id,a:norm(t.n+' '+(t.normas||[]).join(' ')),b:norm(plano(t.r)),c:norm(plano(cuerpo))});
+  (t.g||[]).forEach(g=>INDICE.push({tipo:'Glosario · '+t.n,titulo:g[0],sub:plano(g[1]),href:'#t-'+t.id,a:norm(g[0]),b:norm(plano(g[1]))}));
+});
+const qEl=$('#q'),resEl=$('#resultados');let resSel=-1,resActual=[];
+function buscar(q){
+  const p=norm(q).split(/\s+/).filter(Boolean);if(!p.length)return[];
+  const out=[];
+  INDICE.forEach(it=>{let s=0;for(const w of p){if(it.a.includes(w))s+=10;else if(it.b.includes(w))s+=4;else if(it.c&&it.c.includes(w))s+=1;else return;}out.push([s,it]);});
+  return out.sort((x,y)=>y[0]-x[0]).slice(0,10).map(x=>x[1]);
+}
+function pintarRes(){
+  const q=qEl.value.trim();
+  if(!q){cerrarRes();return;}
+  resActual=buscar(q);resSel=-1;
+  resEl.innerHTML=resActual.length?resActual.map((it,i)=>`<a class="res-item" role="option" href="${it.href}" data-i="${i}"><span class="lbl">${esc(it.tipo)}</span><strong>${esc(it.titulo)}</strong><small>${esc(it.sub.slice(0,140))}${it.sub.length>140?'…':''}</small></a>`).join(''):`<div class="res-vacio">Sin resultados para «${esc(q)}». Prueba con un término más general o un número de artículo.</div>`;
+  resEl.hidden=false;qEl.setAttribute('aria-expanded','true');
+}
+function cerrarRes(){resEl.hidden=true;qEl.setAttribute('aria-expanded','false');}
+qEl.addEventListener('input',pintarRes);
+qEl.addEventListener('focus',()=>{if(qEl.value.trim())pintarRes();});
+qEl.addEventListener('keydown',e=>{
+  const items=resEl.querySelectorAll('.res-item');
+  if(e.key==='ArrowDown'){e.preventDefault();resSel=Math.min(items.length-1,resSel+1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();resSel=Math.max(0,resSel-1);}
+  else if(e.key==='Enter'){e.preventDefault();const it=resActual[resSel<0?0:resSel];if(it){location.hash=it.href.slice(1);qEl.blur();cerrarRes();}return;}
+  else return;
+  items.forEach((x,i)=>x.classList.toggle('activo',i===resSel));
+  if(items[resSel])items[resSel].scrollIntoView({block:'nearest'});
+});
+resEl.addEventListener('click',e=>{if(e.target.closest('.res-item')){cerrarRes();qEl.value='';}});
+document.addEventListener('click',e=>{if(!e.target.closest('.buscador'))cerrarRes();});
+
+/* ---------- Enrutador ---------- */
+function ruta(){
+  const h=location.hash.slice(1);
+  cerrarMenu();cerrarRes();
+  if(!h||h==='inicio')return vInicio();
+  if(h==='examen')return vExamen();
+  if(h==='glosario')return vGlosario();
+  if(h==='biblioteca')return vBiblioteca();
+  if(h==='progreso')return vProgreso();
+  if(h.slice(0,2)==='m-'&&MOD[h.slice(2)])return vModulo(MOD[h.slice(2)]);
+  if(h.slice(0,2)==='t-'&&TEMA[h.slice(2)])return vTema(TEMA[h.slice(2)],'leccion');
+  if(h.slice(0,2)==='p-'&&TEMA[h.slice(2)])return vTema(TEMA[h.slice(2)],'practica');
+  vInicio();
+}
+window.addEventListener('hashchange',()=>{ruta();window.scrollTo(0,0);});
+ruta();
+})();
+</script>
+</body>
+</html>

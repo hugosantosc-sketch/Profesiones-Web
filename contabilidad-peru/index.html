@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aula Contable Perú</title>
+<meta name="description" content="Curso de contabilidad peruana de nivel básico a avanzado: PCGE 2019, NIIF, SUNAT, planilla y costos, con ejercicios resueltos.">
+<meta name="theme-color" content="#17624f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2317624f'/%3E%3Cpath d='M9 8h6a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H9z' fill='%23ffffff' opacity='.92'/%3E%3Cpath d='M23 8h-6a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h6z' fill='%23ffffff' opacity='.65'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Base equivalente al contenedor original */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="menubtn" class="iconbtn" aria-label="Abrir el índice">☰ Índice</button>
+  <button class="brand" id="home" style="background:none;border:0;padding:0;color:inherit;text-align:left">
+    <b>Aula Contable Perú</b><span>PCGE 2019 · NIIF · SUNAT</span>
+  </button>
+  <span class="spacer"></span>
+  <div class="searchwrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <input id="q" type="search" placeholder="Buscar un tema…" autocomplete="off" aria-label="Buscar un tema">
+    <div id="res" class="results" hidden></div>
+  </div>
+  <button id="tema" class="iconbtn" aria-label="Cambiar entre modo claro y oscuro">◐</button>
+</header>
+
+<div class="shell">
+  <aside class="rail" id="rail"><div class="railhead">Programa del curso</div><div id="nav"></div></aside>
+  <main class="main"><div class="col" id="vista"></div></main>
+</div>
+
+<script src="data/m1.js"></script>
+<script src="data/m2.js"></script>
+<script src="data/m3.js"></script>
+<script src="data/m4.js"></script>
+<script src="data/m5.js"></script>
+<script src="data/m6.js"></script>
+<script src="data/m7.js"></script>
+<script src="data/ref.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
