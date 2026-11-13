@@ -5,7 +5,7 @@
   var INTERVALS = [1, 3, 7, 16, 35];
   var S = load();
 
-  function load() { try { var d = JSON.parse(localStorage.getItem(KEY)); if (d && d.ex) return d; } catch (e) {} return { ex: {}, read: {}, last: null, drafts: {} }; }
+  function load() { try { var d = JSON.parse(localStorage.getItem(KEY)); if (d && d.ex) { d.proj = d.proj || {}; return d; } } catch (e) {} return { ex: {}, read: {}, last: null, drafts: {}, proj: {} }; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function h(html) { var d = document.createElement('div'); d.innerHTML = html; return d; }
@@ -23,7 +23,7 @@
   }
 
   /* Mini-markdown para las lecciones */
-  function inline(s) { return esc(s).replace(/«([^»]+)»/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|\s)\*([^*\s][^*]*)\*/g, '$1<i>$2</i>'); }
+  function inline(s) { return esc(s).replace(/«([^»]+)»/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[\s(>])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>'); }
   function md(src) {
     var lines = src.replace(/^\n+/, '').split('\n'), out = [], i = 0;
     while (i < lines.length) {
@@ -39,6 +39,7 @@
         continue;
       }
       if (l.indexOf(':::flow') === 0) { out.push('<div class="flow">' + l.slice(7).split('|').map(function (x) { return '<span>' + inline(x.trim()) + '</span>'; }).join('<i></i>') + '</div>'); i++; continue; }
+      if (l.indexOf(':::cita ') === 0) { var cp = l.slice(8).split(' | '); out.push('<figure class="cita"><blockquote>' + inline(cp[0]) + '</blockquote>' + (cp[1] ? '<figcaption>' + inline(cp[1]) + '</figcaption>' : '') + '</figure>'); i++; continue; }
       if (l.indexOf(':::w ') === 0) { out.push('<div class="widget" data-w="' + l.slice(5).trim() + '"></div>'); i++; continue; }
       if (l.indexOf('### ') === 0) { out.push('<h3>' + inline(l.slice(4)) + '</h3>'); i++; continue; }
       if (l.indexOf('## ') === 0) { out.push('<h2>' + inline(l.slice(3)) + '</h2>'); i++; continue; }
@@ -224,7 +225,7 @@
       return '<details class="trace-mod' + (p.pct === 100 ? ' full' : '') + '"' + (open ? ' open' : '') + '><summary><span class="pad ' + (p.pct ? 'on' : '') + '" style="--p:' + p.pct + '"></span><span>' + (mi + 1) + '. ' + esc(m.title) + '</span></summary><ul>' +
         m.subs.map(function (s) { var sp = subProgress(s); return '<li data-s="' + esc((SDC.subs[s].title + ' ' + (SDC.subs[s].terms || []).map(function (t) { return t[0]; }).join(' ')).toLowerCase()) + '"><a href="#/t/' + s + '" class="' + (route.sub === s ? 'on' : '') + '"><span>' + esc(SDC.subs[s].title) + '</span>' + (sp.ok ? '<small>' + sp.pct + '%</small>' : '') + '</a></li>'; }).join('') + '</ul></details>';
     }).join('');
-    side.innerHTML = '<a class="side-brand" href="#/">Software<br>Desde Cero</a><nav class="side-links"><a href="#/repaso">Repaso</a><a href="#/mapa">Conexiones</a><a href="#/fuentes">Fuentes</a><a href="#/ajustes">Progreso</a><a href="#" id="themeside" role="button">Tema</a></nav><input id="q" type="search" placeholder="Buscar un tema" aria-label="Buscar un tema">' + modHtml;
+    side.innerHTML = '<a class="side-brand" href="#/">Software<br>Desde Cero</a><nav class="side-links"><a href="#/plan">Plan</a><a href="#/repaso">Repaso</a><a href="#/mapa">Conexiones</a><a href="#/fuentes">Fuentes</a><a href="#/ajustes">Progreso</a><a href="#" id="themeside" role="button">Tema</a></nav><input id="q" type="search" placeholder="Buscar un tema" aria-label="Buscar un tema">' + modHtml;
     side.querySelector('#themeside').onclick = function (e) { e.preventDefault(); toggleTheme(); };
     side.querySelector('#q').oninput = function () {
       var v = this.value.toLowerCase().trim();
@@ -272,14 +273,49 @@
       '<ul class="subl">' + m.subs.map(function (s) { var sp = subProgress(s); return '<li><a href="#/t/' + s + '"><b>' + esc(SDC.subs[s].title) + '</b><small>' + sp.ok + ' de ' + sp.total + ' ejercicios</small></a></li>'; }).join('') + '</ul>' +
       '<div class="thread"><b>En PatioApp</b><br>' + inline(m.thread) + '</div>' +
       '<p class="books"><b>Libros base:</b> ' + inline(m.books) + '</p><p class="books"><b>Equivale en la universidad a:</b> ' + inline(m.uni) + '</p>' +
+      (m.capstone ? projectCard(m.capstone, 'c:' + m.id, 'Proyecto integrador del módulo') : '') +
       (next ? '<p><a class="btn alt" href="#/m/' + next.id + '">Siguiente módulo: ' + esc(next.title) + '</a></p>' : '') + '</div>';
+    bindChecks(main);
   }
 
   function incoming(sid) { return SDC.order.filter(function (o) { return (SDC.subs[o].links || []).some(function (l) { return l[0] === sid; }); }); }
   function subHeader(sub, tab) {
     var m = SDC.modules.filter(function (x) { return x.id === sub.mod; })[0], p = subProgress(sub.id);
     return '<div class="crumbs"><a href="#/">Inicio</a> / <a href="#/m/' + m.id + '">' + esc(m.title) + '</a></div><h1 class="t">' + esc(sub.title) + '</h1>' +
-      '<nav class="tabs"><a href="#/t/' + sub.id + '" class="' + (tab === 'l' ? 'on' : '') + '">Lección</a><a href="#/t/' + sub.id + '/ej" class="' + (tab === 'e' ? 'on' : '') + '">Ejercicios (' + p.ok + ' de ' + p.total + ')</a></nav>';
+      '<nav class="tabs"><a href="#/t/' + sub.id + '" class="' + (tab === 'l' ? 'on' : '') + '">Lección</a><a href="#/t/' + sub.id + '/ej" class="' + (tab === 'e' ? 'on' : '') + '">Ejercicios (' + p.ok + ' de ' + p.total + ')</a>' +
+      (sub.project || sub.hito ? '<a href="#/t/' + sub.id + '/pr" class="' + (tab === 'p' ? 'on' : '') + '">Proyectos</a>' : '') + '</nav>';
+  }
+  function steps(list) { return '<ol>' + list.map(function (s) { return '<li>' + inline(s) + '</li>'; }).join('') + '</ol>'; }
+  function checklist(key, items) {
+    return '<ul class="checkl">' + items.map(function (it, i) { var k = key + '#' + i; return '<li><label><input type="checkbox" data-k="' + esc(k) + '"' + (S.proj[k] ? ' checked' : '') + '><span>' + inline(it) + '</span></label></li>'; }).join('') + '</ul>';
+  }
+  function bindChecks(root) {
+    root.querySelectorAll('.checkl input').forEach(function (c) { c.onchange = function () { var k = c.getAttribute('data-k'); if (c.checked) S.proj[k] = 1; else delete S.proj[k]; save(); }; });
+  }
+  function projectCard(p, key, label) {
+    return '<section class="proj"><span class="tag">' + label + '</span><h2>' + inline(p.t) + '</h2><p>' + inline(p.goal) + '</p><h3>Pasos</h3>' + steps(p.steps) +
+      '<h3>Entregable</h3><p>' + inline(p.deliver) + '</p><h3>Marca lo que ya cumpliste</h3>' + checklist(key, p.steps) + '</section>';
+  }
+  function viewProjects(sid) {
+    var sub = SDC.subs[sid]; if (!sub) return viewHome();
+    S.last = sid; save();
+    var ms = SDC.milestones(), k = ms.indexOf(sid), html = '';
+    if (sub.project) html += projectCard(sub.project, 'p:' + sid, 'Proyecto del tema');
+    if (k >= 0) {
+      var prev = ms.slice(0, k), byMod = {};
+      prev.forEach(function (s) { var m = SDC.subs[s].mod; (byMod[m] = byMod[m] || []).push(s); });
+      var recent = prev.slice(-3);
+      html += '<section class="proj acum"><span class="tag">Proyecto acumulativo · hito ' + (k + 1) + ' de ' + ms.length + '</span><h2>PatioApp: ' + esc(sub.title) + '</h2>' +
+        '<p>PatioApp es el sistema de gestión de un patio de vehículos que construyes durante todo el curso. Cada tema agrega un hito. Este integra ' + (k ? 'los ' + k + ' hitos anteriores' : 'el punto de partida') + ' y lo nuevo de este tema: no empieces de cero, continúa sobre tu versión anterior.</p>' +
+        '<h3>Lo nuevo en este hito</h3>' + checklist('h:' + sid, sub.hito) +
+        (recent.length ? '<h3>Debe seguir funcionando (prueba de regresión)</h3><ul>' + recent.map(function (s) { return '<li><a href="#/t/' + s + '/pr">' + esc(SDC.subs[s].title) + '</a>: ' + inline(SDC.subs[s].hito.map(function (x) { return x.replace(/\.$/, ''); }).join('; ') + '.') + '</li>'; }).join('') + '</ul>' : '') +
+        (prev.length ? '<details class="hist"><summary>Ver todo lo que ya integra (' + prev.length + ' hitos)</summary>' + SDC.modules.filter(function (m) { return byMod[m.id]; }).map(function (m) {
+          return '<h4>' + esc(m.title) + '</h4><ul>' + byMod[m.id].map(function (s) { var done = SDC.subs[s].hito.every(function (_, i) { return S.proj['h:' + s + '#' + i]; }); return '<li class="' + (done ? 'done' : '') + '"><a href="#/t/' + s + '/pr">' + esc(SDC.subs[s].title) + '</a>: ' + inline(SDC.subs[s].hito.map(function (x) { return x.replace(/\.$/, ''); }).join('; ') + '.') + '</li>'; }).join('') + '</ul>';
+        }).join('') + '</details>' : '') + '</section>';
+    }
+    var i = SDC.order.indexOf(sid), nx = SDC.order[i + 1];
+    main.innerHTML = '<div class="wrap">' + subHeader(sub, 'p') + html + '<div class="row" style="margin-top:24px"><a class="btn alt" href="#/t/' + sid + '">Volver a la lección</a>' + (nx ? '<a class="btn" href="#/t/' + nx + '">Siguiente tema: ' + esc(SDC.subs[nx].title) + '</a>' : '') + '</div></div>';
+    bindChecks(main);
   }
   function viewLesson(sid) {
     var sub = SDC.subs[sid]; if (!sub) return viewHome();
@@ -291,9 +327,13 @@
         inc.map(function (o) { var l = SDC.subs[o].links.filter(function (x) { return x[0] === sid; })[0]; return '<li><a href="#/t/' + o + '">' + esc(SDC.subs[o].title) + '</a>: ' + inline(l[1]) + '</li>'; }).join('') +
         (sub.links || []).map(function (l) { return SDC.subs[l[0]] ? '<li><a href="#/t/' + l[0] + '">' + esc(SDC.subs[l[0]].title) + '</a>: ' + inline(l[1]) + '</li>' : ''; }).join('') + '</ul></section>';
     }
-    main.innerHTML = '<div class="wrap">' + subHeader(sub, 'l') + '<article class="prose">' + md(sub.lesson) + '</article>' + links +
+    var deep = sub.deep ? '<section class="deep"><p class="deep-h">A fondo</p><article class="prose">' + md(sub.deep) + '</article></section>' : '';
+    var checks = sub.checks && sub.checks.length ? '<section class="checks"><h2>Comprueba tu comprensión</h2><p class="hintl">Responde en voz alta o por escrito antes de abrir cada respuesta. Recuperar la idea de memoria es lo que la fija.</p>' +
+      sub.checks.map(function (c, n) { return '<details><summary><b>' + (n + 1) + '.</b> ' + inline(c[0]) + '</summary><div>' + inline(c[1]) + '</div></details>'; }).join('') + '</section>' : '';
+    var cites = sub.cites && sub.cites.length ? '<section class="cites"><h2>Fuentes citadas</h2><ol>' + sub.cites.map(function (c) { return '<li>' + inline(c) + '</li>'; }).join('') + '</ol></section>' : '';
+    main.innerHTML = '<div class="wrap">' + subHeader(sub, 'l') + '<article class="prose">' + md(sub.lesson) + '</article>' + deep + checks + links + cites +
       (sub.read ? '<p class="books"><b>Para profundizar:</b> ' + inline(sub.read) + '</p>' : '') +
-      '<div class="row" style="margin-top:24px"><a class="btn" href="#/t/' + sid + '/ej">Practicar este tema</a>' + (nx ? '<a class="btn alt" href="#/t/' + nx + '">Siguiente tema: ' + esc(SDC.subs[nx].title) + '</a>' : '') + '</div></div>';
+      '<div class="row" style="margin-top:24px"><a class="btn" href="#/t/' + sid + '/ej">Practicar este tema</a>' + (sub.project || sub.hito ? '<a class="btn alt" href="#/t/' + sid + '/pr">Ver proyectos</a>' : '') + (nx ? '<a class="btn alt" href="#/t/' + nx + '">Siguiente tema: ' + esc(SDC.subs[nx].title) + '</a>' : '') + '</div></div>';
     mountEnhancements(main);
   }
 
@@ -370,7 +410,19 @@
 
   function viewSources() {
     var r = SDC.refs;
-    main.innerHTML = '<div class="wrap"><h1 class="t">Fuentes del curso</h1><p class="lead">' + inline(r.intro) + '</p><article class="prose">' + md(r.body) + '</article></div>';
+    var all = {};
+    SDC.order.forEach(function (s) { (SDC.subs[s].cites || []).forEach(function (c) { (all[c] = all[c] || []).push(s); }); });
+    var keys = Object.keys(all).sort(function (a, b) { return a.replace(/[*_]/g, '').localeCompare(b.replace(/[*_]/g, ''), 'es'); });
+    main.innerHTML = '<div class="wrap"><h1 class="t">Fuentes del curso</h1><p class="lead">' + inline(r.intro) + '</p><article class="prose">' + md(r.body) + '</article>' +
+      (keys.length ? '<section class="cites"><h2>Bibliografía citada en las lecciones (' + keys.length + ' obras)</h2><ol>' + keys.map(function (c) { return '<li>' + inline(c) + ' <small>Citada en: ' + all[c].map(function (s) { return '<a href="#/t/' + s + '">' + esc(SDC.subs[s].title) + '</a>'; }).join(', ') + '</small></li>'; }).join('') + '</ol></section>' : '') + '</div>';
+  }
+
+  function viewPlan() {
+    var total = 0; SDC.modules.forEach(function (m) { total += m.subs.length; });
+    main.innerHTML = '<div class="wide"><h1 class="t">Plan de estudios</h1><p class="lead">El curso sigue el orden de los planes de estudio de las mejores universidades: primero fundamentos de computación y matemática, luego programación y algoritmos, después sistemas, y al final la ingeniería del software, la operación y las especialidades. Son ' + SDC.modules.length + ' módulos y ' + total + ' temas.</p>' +
+      '<div class="tablew"><table class="plan"><thead><tr><th>#</th><th>Módulo y temas</th><th>Equivale en la universidad a</th></tr></thead><tbody>' + SDC.modules.map(function (m, i) {
+        return '<tr><td>' + (i + 1) + '</td><td><a href="#/m/' + m.id + '"><b>' + esc(m.title) + '</b></a><br><small>' + m.subs.map(function (s) { return esc(SDC.subs[s].title); }).join(' · ') + '</small></td><td><small>' + inline(m.uni || '') + '</small></td></tr>';
+      }).join('') + '</tbody></table></div><p class="books">Los códigos de curso son los publicados por cada universidad y pueden cambiar de numeración (por ejemplo, el MIT renumeró sus cursos en 2022). Este curso no está afiliado a ninguna de ellas ni otorga un título.</p></div>';
   }
 
   function viewSettings() {
@@ -381,11 +433,11 @@
     };
     document.getElementById('imp').onchange = function () {
       var f = this.files[0], rd = new FileReader();
-      rd.onload = function () { try { var d = JSON.parse(rd.result); if (!d.ex) throw 0; S = d; S.drafts = S.drafts || {}; S.read = S.read || {}; save(); route(); document.getElementById('msg').textContent = 'Progreso cargado.'; } catch (e) { document.getElementById('msg').textContent = 'Ese archivo no es un progreso válido. Usa el que descargaste desde esta página.'; } };
+      rd.onload = function () { try { var d = JSON.parse(rd.result); if (!d.ex) throw 0; S = d; S.drafts = S.drafts || {}; S.read = S.read || {}; S.proj = S.proj || {}; save(); route(); document.getElementById('msg').textContent = 'Progreso cargado.'; } catch (e) { document.getElementById('msg').textContent = 'Ese archivo no es un progreso válido. Usa el que descargaste desde esta página.'; } };
       rd.readAsText(f);
     };
     var rs = document.getElementById('rst'), armed = false;
-    rs.onclick = function () { if (!armed) { armed = true; rs.textContent = 'Toca otra vez para confirmar el borrado'; return; } S = { ex: {}, read: {}, last: null, drafts: {} }; save(); route(); };
+    rs.onclick = function () { if (!armed) { armed = true; rs.textContent = 'Toca otra vez para confirmar el borrado'; return; } S = { ex: {}, read: {}, last: null, drafts: {}, proj: {} }; save(); route(); };
   }
 
   function route() {
@@ -394,11 +446,12 @@
     if (parts[0] === 't') r.sub = parts[1]; if (parts[0] === 'm') r.mod = parts[1];
     renderSide(r);
     side.classList.remove('open'); document.getElementById('scrim').classList.remove('open');
-    if (parts[0] === 't') { if (parts[2] === 'ej') viewPractice(parts[1]); else viewLesson(parts[1]); }
+    if (parts[0] === 't') { if (parts[2] === 'ej') viewPractice(parts[1]); else if (parts[2] === 'pr') viewProjects(parts[1]); else viewLesson(parts[1]); }
     else if (parts[0] === 'm') viewModule(parts[1]);
     else if (parts[0] === 'repaso') viewReview();
     else if (parts[0] === 'mapa') viewMap();
     else if (parts[0] === 'fuentes') viewSources();
+    else if (parts[0] === 'plan') viewPlan();
     else if (parts[0] === 'ajustes') viewSettings();
     else viewHome();
     window.scrollTo(0, 0);

@@ -11,6 +11,13 @@
     SDC.modules.filter(function (m) { return m.id === modId; })[0].subs.push(id);
   };
 
+  /* Amplía un tema o módulo ya registrado (profundización, preguntas, fuentes y proyectos). */
+  SDC.missing = [];
+  SDC.X = function (id, ext) { var s = SDC.subs[id]; if (!s) { SDC.missing.push(id); return; } for (var k in ext) s[k] = ext[k]; };
+  SDC.XM = function (id, ext) { var m = SDC.modules.filter(function (x) { return x.id === id; })[0]; if (!m) { SDC.missing.push(id); return; } for (var k in ext) m[k] = ext[k]; };
+  /* Proyecto acumulativo: cada hito integra todos los anteriores en el orden del curso. */
+  SDC.milestones = function () { return SDC.order.filter(function (s) { return SDC.subs[s].hito && SDC.subs[s].hito.length; }); };
+
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
   function rng(seedText) {
     var a = parseInt(hash(seedText), 36) || 1;
@@ -131,7 +138,8 @@
       if (n === v) return true;
       if (v === '' || n === '') return false;
       var x = Number(v.replace(',', '.')), y = Number(n);
-      return !isNaN(x) && !isNaN(y) && Math.abs(x - y) < 1e-9;
+      var dec = (n.split('.')[1] || '').length, tol = dec ? 0.5 * Math.pow(10, -dec) + 1e-9 : 1e-9;
+      return !isNaN(x) && !isNaN(y) && Math.abs(x - y) <= tol;
     });
   };
   /* Valida el arreglo de pruebas de un ejercicio de código en un entorno controlado. */

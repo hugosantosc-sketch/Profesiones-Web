@@ -207,3 +207,34 @@ details.grid summary{cursor:pointer;font-weight:700}
 }
 @media (min-width:901px){#theme-side{display:inline-block}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Ampliación: a fondo, preguntas, fuentes, proyectos y plan */
+.deep{margin-top:40px;border-top:3px solid var(--copper);padding-top:8px}
+.deep-h{font:800 .8rem/1 'Bricolage Grotesque',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--copper);margin:0 0 4px}
+.cita{margin:20px 0;padding:14px 18px;border-left:4px solid var(--copper);background:var(--note)}
+.cita blockquote{margin:0;font-style:italic;font-size:1.05rem}
+.cita figcaption{margin-top:6px;font-size:.88rem;opacity:.8}
+.checks{margin-top:36px}
+.checks .hintl{opacity:.8;font-size:.93rem}
+.checks details{border:1px solid var(--line);border-radius:6px;margin:8px 0;padding:10px 14px;background:var(--panel)}
+.checks summary{cursor:pointer;line-height:1.5}
+.checks details div{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.cites{margin-top:32px}
+.cites ol{padding-left:22px;font-size:.93rem}
+.cites li{margin:6px 0}
+.cites small{display:block;opacity:.75}
+.proj{border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:24px 0;background:var(--panel)}
+.proj.acum{border-left:5px solid var(--copper)}
+.proj .tag{display:inline-block;font:700 .75rem/1 'Bricolage Grotesque',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--copper)}
+.proj h2{margin:8px 0 6px}
+.proj h3{margin:18px 0 6px;font-size:1rem}
+.checkl{list-style:none;padding:0}
+.checkl li{margin:6px 0}
+.checkl label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.checkl input{margin-top:5px;width:18px;height:18px;accent-color:var(--copper);flex:none}
+.checkl input:checked+span{opacity:.6;text-decoration:line-through}
+.hist summary{cursor:pointer;font-weight:700;margin-top:12px}
+.hist h4{margin:14px 0 4px}
+.hist li.done{opacity:.6}
+.plan td{vertical-align:top}
+.plan small{line-height:1.5}

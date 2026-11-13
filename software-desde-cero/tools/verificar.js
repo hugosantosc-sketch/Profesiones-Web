@@ -7,12 +7,18 @@ const ctx = vm.createContext({ console, Math, JSON, Function, Array, Object, Num
 ctx.globalThis = ctx;
 for (const s of scripts) { const f = path.join(root, s); if (!fs.existsSync(f)) { console.log('Falta', s); continue; } vm.runInContext(fs.readFileSync(f, 'utf8'), ctx, { filename: s }); }
 const SDC = ctx.SDC;
-let errors = [], total = 0, min = 1e9, codeN = 0, summary = [];
+let errors = [], pend = [], total = 0, min = 1e9, codeN = 0, summary = [];
 for (const id of SDC.order) {
   const sub = SDC.subs[id], ex = SDC.exercises(id);
   total += ex.length; min = Math.min(min, ex.length);
   const lv = [0, 0, 0, 0, 0]; ex.forEach(e => lv[e.level]++);
-  summary.push(`${id.padEnd(22)} ${String(ex.length).padStart(4)}  [${lv.slice(1).join('/')}]`);
+  const words = ((sub.lesson || '') + ' ' + (sub.deep || '')).split(/\s+/).length;
+  summary.push(`${id.padEnd(22)} ${String(ex.length).padStart(4)}  [${lv.slice(1).join('/')}]  ${String(words).padStart(5)} palabras`);
+  if (words < 900) pend.push(`${id}: teoría corta (${words} palabras)`);
+  if (!sub.checks || sub.checks.length < 4) pend.push(`${id}: faltan preguntas de comprensión`);
+  if (!sub.cites || sub.cites.length < 2) pend.push(`${id}: faltan fuentes citadas`);
+  if (!sub.project || !sub.project.steps || !sub.project.deliver) pend.push(`${id}: falta proyecto del tema`);
+  if (!sub.hito || sub.hito.length < 2) pend.push(`${id}: falta hito acumulativo`);
   if (ex.length < 50) errors.push(`${id}: solo ${ex.length} ejercicios`);
   for (let l = 1; l <= 4; l++) if (!lv[l]) errors.push(`${id}: sin nivel ${l}`);
   if (!sub.lesson || sub.lesson.length < 400) errors.push(`${id}: lección corta`);
@@ -38,7 +44,10 @@ for (const id of SDC.order) {
     }
   });
 }
+SDC.modules.forEach(m => { if (!m.capstone) pend.push(`${m.id}: falta proyecto integrador`); if (!m.uni) pend.push(`${m.id}: faltan equivalencias`); });
+SDC.missing.forEach(x => errors.push(`ampliación apunta a un id inexistente: ${x}`));
 if (process.argv.includes('-v')) console.log(summary.join('\n'));
+if (pend.length) { console.log('PENDIENTES DE AMPLIACIÓN (' + pend.length + '):\n' + pend.slice(0, process.argv.includes('-p') ? 999 : 15).join('\n')); if (process.argv.includes('-e')) errors.push(pend.length + ' pendientes'); }
 console.log(`Módulos ${SDC.modules.length} | Temas ${SDC.order.length} | Ejercicios ${total} | Mínimo por tema ${min} | De código ${codeN}`);
 if (errors.length) { console.log('ERRORES (' + errors.length + '):\n' + errors.slice(0, 80).join('\n')); process.exit(1); }
 console.log('Todo correcto.');
