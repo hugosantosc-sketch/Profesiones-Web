@@ -45,6 +45,7 @@ const HILOS=[
 ['Por qué una viga es alta','Cálculo, geometría y resistencia',['der','int','cen','flx','def','pan','vac']],
 ['Un edificio peruano completo','Del estudio de suelos a la escalera',['spt','car','dre','fcp','pla','l2d','esc','cz1','cz3']],
 ['Un puente sobre un río','Hidrología, socavación y carga viva',['gum','rac','soc','pu1','pu2','pu3','pe3','pu4']],
+['Agua desde la sierra','Captar, conducir y almacenar',['boc','des','gar','pgr','pti','msk']],
 ['Una pila bajo el edificio','Del sondeo al grupo de pilotes',['geo1','exp','spt','esf2','pil','fne','grp','ael']],
 ['Del campo al riego','Clima, agua y canales',['evp','inf','rie','boc','man','rem','cai']],
 ['Gestionar una obra real','Plazo, dinero y riesgo',['cpm','pert','lean','flc','gfz','rsg','bim']],
