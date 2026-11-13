@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm');
-let c='';for(const f of ['core','c1','c2','c3','c4'])c+=fs.readFileSync(f+'.js','utf8')+'\n';
+let c='';for(const f of ['core',...Array.from({length:40},(_,i)=>'c'+(i+1)),'orden'].filter(f=>fs.existsSync(f+'.js')))c+=fs.readFileSync(f+'.js','utf8')+'\n';
 vm.runInThisContext(c+';globalThis.CUR=CUR;globalThis.ejercicios=ejercicios;globalThis.correcto=correcto;globalThis.fm=fm;');
 let tot=0,prob=[];
 for(const id of CUR.order){const S=CUR.subs[id];

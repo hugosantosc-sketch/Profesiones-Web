@@ -37,4 +37,8 @@ function md(s){const out=[];s.trim().split(/\n\s*\n/).forEach(b=>{b=b.trim();
   if(b.startsWith('- '))out.push('<ul>'+b.split(/\n/).map(l=>'<li>'+inl(l.replace(/^- /,''))+'</li>').join('')+'</ul>');
   else out.push('<p>'+inl(b)+'</p>');});return out.join('');}
 function inl(s){return fm(s).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');}
+/* Deducciones, preguntas de criterio y referencias que se agregan a subtemas ya creados */
+function DED(id,t){CUR.subs[id].ded=t;}
+function CRI(id,a){const S=CUR.subs[id];S.cri=(S.cri||[]).concat(a);}
+function REF(id,a){const S=CUR.subs[id];S.ref=(S.ref||[]).concat(a);}
 if(typeof module!=='undefined')module.exports={};

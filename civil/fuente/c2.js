@@ -314,7 +314,7 @@ Las varillas se nombran por diámetro en octavos de pulgada:
 - 1": 5.10 cm², 3.97 kg/m
 
 Una varilla comercial mide 9 m. La **cuantía** ρ = A_{s}/(b·d) compara acero contra concreto.`,
-key:['ρ = [[A_{s}|b·d]]','N = [[A_{s}|A_{varilla}]]','Peso = 0.00785·A_{s}·L (t, cm², m)'],
+key:['ρ = [[A_{s}|b·d]]','N = [[A_{s}|A_{varilla}]]','Peso = 0.785·A_{s}·L (kg, cm², m)'],
 err:'Redondear el número de varillas hacia abajo. Siempre hacia arriba, y dejando espacio libre.',
 x:[['fle','A_{s} calculado se convierte en varillas'],['met','El metrado de fierro usa estos pesos'],['axi','E_{s} = 2×10⁶ kg/cm²']],
 g:[
