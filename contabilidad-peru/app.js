@@ -94,6 +94,7 @@ const LS = {
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 };
 let hechos = LS.get('acp.hechos',{});
+let proys  = LS.get('acp.proys',{});
 let filtro = 0;
 const temas = () => CURSO.flatMap(m => m.temas.map(t => ({...t, mod:m})));
 const findTema = id => temas().find(t => t.id === id);
@@ -130,17 +131,21 @@ function renderHome(){
   const hechosN = tt.filter(t => hechos[t.id]).length;
   const ejN = CURSO.reduce((a,m) => a + m.temas.reduce((b,t) => b + t.ej.length, 0), 0);
   const minN = CURSO.reduce((a,m) => a + m.temas.reduce((b,t) => b + (t.min||0), 0), 0);
+  const proyN = CURSO.reduce((a,m) => a + m.temas.reduce((b,t) => b + (t.proy?1:0) + (t.proyInt?1:0), 0), 0);
+  const proyHechos = Object.keys(proys).length;
   document.getElementById('vista').innerHTML =
     '<div class="hero"><div class="crumb">Curso completo · del asiento básico a la consolidación</div>' +
     '<h1>Contabilidad peruana, de cero a nivel avanzado</h1>' +
-    '<p class="lede">Un programa estructurado sobre el PCGE 2019, las NIIF oficializadas por el CNC y la normativa tributaria vigente. ' +
-    'Cada subtema explica el concepto con ejemplos reales de empresas peruanas, muestra los asientos tal como se registran y cierra con ejercicios de nivel fácil, medio y difícil con solución desarrollada.</p>' +
+    '<p class="lede">Un programa estructurado sobre el PCGE 2019, las NIIF oficializadas por el CNC y la normativa tributaria vigente, con la secuencia de contenidos que usan los programas de contabilidad de Wharton y la LSE. ' +
+    'Cada subtema explica la teoría citando a sus autores, propone preguntas de comprensión, ejercicios de nivel fácil, medio y difícil con solución desarrollada, y dos proyectos: uno del subtema y uno integrador que acumula todo lo anterior.</p>' +
     '<div class="kpis">' +
     '<div class="kpi"><b>' + CURSO.length + '</b><span>Módulos</span></div>' +
     '<div class="kpi"><b>' + tt.length + '</b><span>Subtemas</span></div>' +
     '<div class="kpi"><b>' + ejN + '</b><span>Ejercicios</span></div>' +
+    '<div class="kpi"><b>' + proyN + '</b><span>Proyectos</span></div>' +
     '<div class="kpi"><b>' + Math.round(minN/60*10)/10 + ' h</b><span>De lectura</span></div>' +
-    '<div class="kpi"><b>' + hechosN + '/' + tt.length + '</b><span>Tu avance</span></div>' +
+    '<div class="kpi"><b>' + hechosN + '/' + tt.length + '</b><span>Subtemas vistos</span></div>' +
+    (proyHechos ? '<div class="kpi"><b>' + proyHechos + '/' + proyN + '</b><span>Proyectos hechos</span></div>' : '') +
     '</div></div>' +
     '<div class="modcards">' + CURSO.map((m,i) => {
       const done = m.temas.filter(t => hechos[t.id]).length;
@@ -230,6 +235,51 @@ function bindEj(t){
 /* ============================================================
    VISTA DE TEMA
    ============================================================ */
+/* ============================================================
+   PREGUNTAS DE COMPRENSIÓN, PROYECTOS Y BIBLIOGRAFÍA
+   ============================================================ */
+function renderPreg(t){
+  if(!t.preg || !t.preg.length) return '';
+  return '<h2 class="sec">Preguntas de comprensión</h2>' +
+    '<p class="secnota">Respóndelas en voz alta o por escrito antes de abrir la respuesta. Si no puedes explicarlo con tus palabras, vuelve a la teoría.</p>' +
+    '<ol class="preg">' + t.preg.map((p,i) =>
+      '<li><div class="pq">' + inl(p.p) + '</div>' +
+      '<button class="btn ghost mini" data-preg="' + t.id + '-' + i + '">Ver respuesta</button>' +
+      '<div class="pr" id="pr-' + t.id + '-' + i + '" hidden>' + md(p.r) + '</div></li>').join('') +
+    '</ol>';
+}
+
+function bloqueProy(p, clase, etiqueta, uid){
+  if(!p) return '';
+  const lista = (arr, cls) => arr && arr.length
+    ? '<ul class="' + cls + '">' + arr.map(x => '<li>' + inl(x) + '</li>').join('') + '</ul>' : '';
+  const hecho = proys[uid];
+  return '<div class="proy ' + clase + '">' +
+    '<div class="proycab"><span class="proytag">' + etiqueta + '</span><h3>' + inl(p.t) + '</h3>' +
+    (p.integra ? '<span class="proyint">Integra: ' + inl(p.integra) + '</span>' : '') + '</div>' +
+    '<div class="prose">' + md(p.ctx) + '</div>' +
+    (p.pasos ? '<h4>Qué tienes que hacer</h4>' + '<ol class="pasos">' + p.pasos.map(x => '<li>' + inl(x) + '</li>').join('') + '</ol>' : '') +
+    (p.entrega && p.entrega.length ? '<h4>Entregables</h4>' + lista(p.entrega, 'entrega') : '') +
+    (p.crit ? '<h4>Cómo saber si está bien</h4>' + lista(p.crit, 'crit') : '') +
+    (p.pista ? '<div class="nota">' + inl(p.pista) + '</div>' : '') +
+    '<button class="btn ' + (hecho ? '' : 'ghost') + ' proybtn" data-proy="' + uid + '">' +
+    (hecho ? '✓ Proyecto entregado — desmarcar' : 'Marcar proyecto como hecho') + '</button></div>';
+}
+
+function renderProy(t){
+  if(!t.proy && !t.proyInt) return '';
+  return '<h2 class="sec">Proyectos</h2>' +
+    bloqueProy(t.proy, 'p1', 'Proyecto del subtema', t.id + ':p') +
+    bloqueProy(t.proyInt, 'p2', 'Proyecto integrador', t.id + ':i');
+}
+
+function renderFuentes(t){
+  if(!t.fuentes || !t.fuentes.length) return '';
+  return '<div class="fuentes"><h3>De dónde sale esto</h3><ul>' +
+    t.fuentes.map(f => '<li><b>' + inl(f.a) + '</b>, <i>' + inl(f.o) + '</i>' + (f.n ? ' — ' + inl(f.n) : '') + '</li>').join('') +
+    '</ul></div>';
+}
+
 function renderTema(id,keepScroll){
   const t = findTema(id);
   if(!t){ renderHome(); return; }
@@ -240,10 +290,19 @@ function renderTema(id,keepScroll){
   document.getElementById('vista').innerHTML =
     '<div class="crumb"><em>Módulo ' + mi + '</em> · ' + esc(t.mod.titulo) + ' · <span class="nivel">' + esc(t.mod.nivel) + '</span></div>' +
     '<h1>' + mi + '.' + ti + ' ' + esc(t.titulo) + '</h1>' +
-    '<p class="lede">Lectura estimada: ' + t.min + ' min' + (t.ej.length ? ' · ' + t.ej.length + ' ejercicios' : ' · material de consulta') + '</p>' +
+    '<p class="lede">' + [
+      'Lectura estimada: ' + t.min + ' min',
+      t.ej.length ? t.ej.length + ' ejercicios' : null,
+      (t.preg && t.preg.length) ? t.preg.length + ' preguntas' : null,
+      (t.proy ? 1 : 0) + (t.proyInt ? 1 : 0) ? ((t.proy ? 1 : 0) + (t.proyInt ? 1 : 0)) + ' proyectos' : null,
+      (!t.ej.length && !t.proy) ? 'material de consulta' : null
+    ].filter(Boolean).join(' · ') + '</p>' +
     '<div class="prose">' + md(t.cont) + '</div>' +
     '<div class="claves"><h3>Para recordar</h3><ul>' + t.claves.map(c => '<li>' + inl(c) + '</li>').join('') + '</ul></div>' +
+    renderPreg(t) +
     (t.ej.length ? renderEj(t) : '') +
+    renderProy(t) +
+    renderFuentes(t) +
     '<div class="foot"><button class="btn ghost" id="marcar">' + (hechos[id] ? '✓ Estudiado — desmarcar' : 'Marcar como estudiado') + '</button>' +
     '<nav>' + (prev ? '<button class="btn ghost" data-go="' + prev.id + '">← ' + esc(prev.titulo.slice(0,28)) + (prev.titulo.length>28?'…':'') + '</button>' : '') +
     (next ? '<button class="btn" data-go="' + next.id + '">' + esc(next.titulo.slice(0,28)) + (next.titulo.length>28?'…':'') + ' →</button>' : '') + '</nav></div>';
@@ -256,6 +315,18 @@ function renderTema(id,keepScroll){
     renderTema(id,true);
   };
   if(t.ej.length) bindEj(t);
+  v.querySelectorAll('[data-preg]').forEach(b => b.onclick = () => {
+    const d = document.getElementById('pr-' + b.dataset.preg);
+    d.hidden = !d.hidden;
+    b.textContent = d.hidden ? 'Ver respuesta' : 'Ocultar respuesta';
+  });
+  v.querySelectorAll('[data-proy]').forEach(b => b.onclick = () => {
+    const k = b.dataset.proy;
+    proys[k] = !proys[k];
+    if(!proys[k]) delete proys[k];
+    LS.set('acp.proys',proys);
+    renderTema(id,true);
+  });
   renderNav(id);
   if(!keepScroll) window.scrollTo(0,0); else window.scrollTo(0,y);
   document.title = t.titulo + ' · Aula Contable Perú';
