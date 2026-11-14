@@ -15,6 +15,10 @@
   SDC.missing = [];
   SDC.X = function (id, ext) { var s = SDC.subs[id]; if (!s) { SDC.missing.push(id); return; } for (var k in ext) s[k] = ext[k]; };
   SDC.XM = function (id, ext) { var m = SDC.modules.filter(function (x) { return x.id === id; })[0]; if (!m) { SDC.missing.push(id); return; } for (var k in ext) m[k] = ext[k]; };
+  /* Profundiza un tema existente agregando texto a su sección «A fondo». */
+  SDC.D = function (id, text) { var s = SDC.subs[id]; if (!s) { SDC.missing.push(id); return; } s.deep = (s.deep ? s.deep + '\n\n' : '') + text; };
+  /* Ubica una unidad dentro de su curso justo después de otra. */
+  SDC.after = function (id, afterId) { var s = SDC.subs[id]; if (!s) return; var m = SDC.modules.filter(function (x) { return x.id === s.mod; })[0], i = m.subs.indexOf(id), j; m.subs.splice(i, 1); j = m.subs.indexOf(afterId); m.subs.splice(j < 0 ? m.subs.length : j + 1, 0, id); };
   /* Proyecto acumulativo: cada hito integra todos los anteriores en el orden del curso. */
   SDC.milestones = function () { return SDC.order.filter(function (s) { return SDC.subs[s].hito && SDC.subs[s].hito.length; }); };
 

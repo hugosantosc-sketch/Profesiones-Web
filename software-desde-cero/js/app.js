@@ -5,7 +5,7 @@
   var INTERVALS = [1, 3, 7, 16, 35];
   var S = load();
 
-  function load() { try { var d = JSON.parse(localStorage.getItem(KEY)); if (d && d.ex) { d.proj = d.proj || {}; return d; } } catch (e) {} return { ex: {}, read: {}, last: null, drafts: {}, proj: {} }; }
+  function load() { try { var d = JSON.parse(localStorage.getItem(KEY)); if (d && d.ex) { d.proj = d.proj || {}; d.exam = d.exam || {}; return d; } } catch (e) {} return { ex: {}, read: {}, last: null, drafts: {}, proj: {}, exam: {} }; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function h(html) { var d = document.createElement('div'); d.innerHTML = html; return d; }
@@ -14,6 +14,15 @@
   function subProgress(sid) { var ex = SDC.exercises(sid), ok = 0; ex.forEach(function (e) { if (S.ex[e.id] && S.ex[e.id].ok) ok++; }); return { ok: ok, total: ex.length, pct: Math.round(ok / ex.length * 100) }; }
   function modProgress(m) { var ok = 0, t = 0; m.subs.forEach(function (s) { var p = subProgress(s); ok += p.ok; t += p.total; }); return { ok: ok, total: t, pct: t ? Math.round(ok / t * 100) : 0 }; }
   function allProgress() { var ok = 0, t = 0; SDC.modules.forEach(function (m) { var p = modProgress(m); ok += p.ok; t += p.total; }); return { ok: ok, total: t, pct: t ? Math.round(ok / t * 100) : 0 }; }
+  /* Carrera: cursos por ciclo, notas vigesimales y créditos */
+  function cursos() { var list = SDC.cursosEnOrden ? SDC.cursosEnOrden() : SDC.modules.slice(); SDC.modules.forEach(function (m) { if (list.indexOf(m) < 0) list.push(m); }); return list; }
+  function modById(id) { return SDC.modules.filter(function (x) { return x.id === id; })[0]; }
+  function cicloDe(id) { var c = (SDC.CICLOS || []).filter(function (c) { return c.cursos.indexOf(id) >= 0; })[0]; return c ? c.n : null; }
+  function nota(id) { var e = S.exam[id]; return e ? e.best : null; }
+  function aprobado(id) { var n = nota(id); return n !== null && n >= (SDC.NOTA_MIN || 11); }
+  function codeOf(m) { return m.code ? m.code + ' · ' : ''; }
+  function notaBadge(id) { var n = nota(id); return n === null ? '' : '<span class="nota ' + (aprobado(id) ? 'ap' : 'de') + '">' + (n < 10 ? '0' : '') + n + '</span>'; }
+
   function record(ex, good) {
     var r = S.ex[ex.id] || { ok: false, box: 0, tries: 0 };
     r.tries++;
@@ -48,6 +57,7 @@
       if (l[0] === '|') {
         var rows = [];
         while (i < lines.length && lines[i].trim()[0] === '|') { rows.push(lines[i].trim().replace(/^\||\|$/g, '').split('|').map(function (c) { return c.trim(); })); i++; }
+        rows = rows.filter(function (r) { return !r.every(function (c) { return /^:?-{2,}:?$/.test(c); }); });   // ignora la fila separadora |---|
         out.push('<div class="tablew"><table><thead><tr>' + rows[0].map(function (c) { return '<th>' + inline(c) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.slice(1).map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + inline(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>');
         continue;
       }
@@ -220,12 +230,14 @@
 
   /* Vistas */
   function renderSide(route) {
-    var modHtml = SDC.modules.map(function (m, mi) {
-      var p = modProgress(m), open = route.sub ? SDC.subs[route.sub] && SDC.subs[route.sub].mod === m.id : route.mod === m.id;
-      return '<details class="trace-mod' + (p.pct === 100 ? ' full' : '') + '"' + (open ? ' open' : '') + '><summary><span class="pad ' + (p.pct ? 'on' : '') + '" style="--p:' + p.pct + '"></span><span>' + (mi + 1) + '. ' + esc(m.title) + '</span></summary><ul>' +
+    var lastCiclo = null;
+    var modHtml = cursos().map(function (m) {
+      var p = modProgress(m), open = route.sub ? SDC.subs[route.sub] && SDC.subs[route.sub].mod === m.id : (route.mod === m.id || route.exam === m.id), cn = cicloDe(m.id);
+      var head = cn && cn !== lastCiclo ? '<p class="side-ciclo">Ciclo ' + cn + '</p>' : ''; lastCiclo = cn;
+      return head + '<details class="trace-mod' + (aprobado(m.id) || p.pct === 100 ? ' full' : '') + '"' + (open ? ' open' : '') + '><summary><span class="pad ' + (p.pct ? 'on' : '') + '" style="--p:' + p.pct + '"></span><span>' + esc(m.title) + (aprobado(m.id) ? ' <small class="okm">✓ ' + nota(m.id) + '</small>' : '') + '</span></summary><ul><li><a href="#/m/' + m.id + '" class="syl' + (route.mod === m.id ? ' on' : '') + '"><span>Sílabo y examen' + (m.code ? ' · ' + esc(m.code) : '') + '</span></a></li>' +
         m.subs.map(function (s) { var sp = subProgress(s); return '<li data-s="' + esc((SDC.subs[s].title + ' ' + (SDC.subs[s].terms || []).map(function (t) { return t[0]; }).join(' ')).toLowerCase()) + '"><a href="#/t/' + s + '" class="' + (route.sub === s ? 'on' : '') + '"><span>' + esc(SDC.subs[s].title) + '</span>' + (sp.ok ? '<small>' + sp.pct + '%</small>' : '') + '</a></li>'; }).join('') + '</ul></details>';
     }).join('');
-    side.innerHTML = '<a class="side-brand" href="#/">Software<br>Desde Cero</a><nav class="side-links"><a href="#/plan">Plan</a><a href="#/repaso">Repaso</a><a href="#/mapa">Conexiones</a><a href="#/fuentes">Fuentes</a><a href="#/ajustes">Progreso</a><a href="#" id="themeside" role="button">Tema</a></nav><input id="q" type="search" placeholder="Buscar un tema" aria-label="Buscar un tema">' + modHtml;
+    side.innerHTML = '<a class="side-brand" href="#/">Software<br>Desde Cero</a><nav class="side-links"><a href="#/plan">Malla</a><a href="#/record">Récord</a><a href="#/repaso">Repaso</a><a href="#/mapa">Conexiones</a><a href="#/fuentes">Fuentes</a><a href="#/ajustes">Progreso</a><a href="#" id="themeside" role="button">Tema</a></nav><input id="q" type="search" placeholder="Buscar un tema" aria-label="Buscar un tema">' + modHtml;
     side.querySelector('#themeside').onclick = function (e) { e.preventDefault(); toggleTheme(); };
     side.querySelector('#q').oninput = function () {
       var v = this.value.toLowerCase().trim();
@@ -237,51 +249,104 @@
     };
   }
 
-  function drawRoute(el) {
-    var W = el.clientWidth, cols = W >= 980 ? 4 : W >= 620 ? 3 : 2, rowH = W >= 620 ? 104 : 118, cw = W / cols;
-    var pts = SDC.modules.map(function (m, i) { var r = Math.floor(i / cols), c = i % cols; if (r % 2) c = cols - 1 - c; return { x: c * cw + 12, y: r * rowH + 14, m: m, i: i }; });
-    var d = '', lit = '', lastLit = -1;
-    pts.forEach(function (p, i) { if (modProgress(p.m).pct > 0) lastLit = i; });
-    pts.forEach(function (p, i) {
-      if (!i) { d = 'M' + p.x + ' ' + p.y; lit = d; return; }
-      var q = pts[i - 1], seg;
-      if (p.y === q.y) seg = 'L' + p.x + ' ' + p.y;
-      else { var my = q.y + 26; seg = 'L' + q.x + ' ' + (my) + ' L' + p.x + ' ' + (p.y - 16) + ' L' + p.x + ' ' + p.y; }
-      d += ' ' + seg; if (i <= lastLit) lit += ' ' + seg;
-    });
-    var rows = Math.ceil(pts.length / cols);
-    el.style.height = rows * rowH + 'px';
-    el.innerHTML = '<svg aria-hidden="true"><path d="' + d + '"/>' + (lastLit > 0 ? '<path class="lit" d="' + lit + '"/>' : '') + '</svg>' + pts.map(function (p) {
-      var mp = modProgress(p.m);
-      return '<a class="node" href="#/m/' + p.m.id + '" style="left:' + (p.x - 12) + 'px;top:' + p.y + 'px;width:' + (cw - 14) + 'px"><span class="pad ' + (mp.pct ? 'on' : '') + '" style="--p:' + mp.pct + ';background-color:var(--board)"></span><span><b>' + (p.i + 1) + '. ' + esc(p.m.title) + '</b><small>' + p.m.subs.length + ' temas' + (mp.pct ? ', ' + mp.pct + '%' : '') + '</small></span></a>';
-    }).join('');
-  }
-
   function viewHome() {
     var p = allProgress(), subs = SDC.order.length, last = S.last && SDC.subs[S.last] ? S.last : SDC.order[0];
-    main.innerHTML = '<div class="wide"><section class="hero"><h1>Del primer bit a un sistema en producción</h1><p>Toda la carrera de ingeniería de software en un solo camino. Cada tema explica la idea en simple, la prueba con código que puedes ejecutar y termina en ejercicios que suben de dificultad.</p><div class="row"><a class="btn" href="#/t/' + last + '">' + (p.ok ? 'Continuar: ' + esc(SDC.subs[last].title) : 'Empezar por el primer tema') + '</a><a class="btn alt" href="#/repaso">Repasar lo aprendido</a></div><div class="route" id="route"></div></section>' +
-      '<div class="stats"><div><b>' + SDC.modules.length + '</b>módulos</div><div><b>' + subs + '</b>temas</div><div><b>' + p.total.toLocaleString('es-PE') + '</b>ejercicios</div><div><b>' + p.ok.toLocaleString('es-PE') + '</b>resueltos por ti (' + p.pct + '%)</div></div>' +
+    main.innerHTML = '<div class="wide"><section class="hero"><h1>Del primer bit a un sistema en producción</h1><p>Una carrera virtual de ingeniería de software en diez ciclos. Cada curso tiene sílabo, unidades con lecciones a fondo, código que puedes ejecutar, ejercicios que suben de dificultad, proyectos y un examen final con nota de 0 a 20.</p><div class="row"><a class="btn" href="#/t/' + last + '">' + (p.ok ? 'Continuar: ' + esc(SDC.subs[last].title) : 'Empezar por el primer tema') + '</a><a class="btn alt" href="#/record">Ver mi récord académico</a></div></section>' +
+      malla() +
+      '<div class="stats"><div><b>' + (SDC.CICLOS ? SDC.CICLOS.length : 1) + '</b>ciclos</div><div><b>' + SDC.modules.length + '</b>cursos</div><div><b>' + creditos().total + '</b>créditos</div><div><b>' + subs + '</b>unidades</div><div><b>' + p.total.toLocaleString('es-PE') + '</b>ejercicios</div><div><b>' + p.ok.toLocaleString('es-PE') + '</b>resueltos por ti (' + p.pct + '%)</div></div>' +
       '<div class="how"><div><h3>Entiende con una imagen</h3><p>Cada lección parte de una analogía de la vida diaria y luego entra al detalle que de verdad se evalúa en el trabajo.</p></div><div><h3>Practica en cuatro niveles</h3><p>Básico, intermedio, avanzado y reto. Los ejercicios de código se ejecutan aquí mismo, con pruebas automáticas.</p></div><div><h3>Conecta lo que ya sabes</h3><p>Cada tema muestra de dónde viene y a dónde te lleva. El repaso mezcla temas para que no se te olviden.</p></div><div><h3>Construye un mismo sistema</h3><p>PatioApp, un sistema para gestionar vehículos en un patio, crece contigo en cada módulo hasta quedar como proyecto final.</p></div></div></div>';
-    var r = document.getElementById('route'); drawRoute(r);
-    window.onresize = function () { if (document.getElementById('route')) drawRoute(document.getElementById('route')); };
+  }
+  function creditos() { var t = 0, a = 0, suma = 0, cr = 0; SDC.modules.forEach(function (m) { var c = m.cred || 0; t += c; if (aprobado(m.id)) a += c; if (nota(m.id) !== null) { suma += nota(m.id) * c; cr += c; } }); return { total: t, aprob: a, prom: cr ? suma / cr : null }; }
+  function malla() {
+    if (!SDC.CICLOS) return '';
+    return '<section class="malla"><h2>Malla curricular</h2><p class="hintl">Diez ciclos, como una carrera universitaria. Aprueba cada curso con su examen final (nota mínima ' + SDC.NOTA_MIN + ' de 20). Los prerrequisitos son recomendaciones: puedes abrir cualquier curso.</p><div class="ciclos">' +
+      SDC.CICLOS.map(function (c) {
+        return '<div class="ciclo"><h3><span>Ciclo ' + c.n + '</span>' + esc(c.nombre) + '</h3>' + c.cursos.map(function (id) {
+          var m = modById(id); if (!m) return '';
+          var mp = modProgress(m), falta = (m.prereq || []).filter(function (q) { return modById(q) && !aprobado(q); });
+          return '<a class="curso' + (aprobado(id) ? ' ok' : '') + '" href="#/m/' + id + '"><small>' + esc(m.code || '') + ' · ' + (m.cred || 0) + ' cr.</small><b>' + esc(m.title) + '</b><span class="cbar"><i style="width:' + mp.pct + '%"></i></span><small>' + (aprobado(id) ? 'Aprobado' : nota(id) !== null ? 'Desaprobado, vuelve a rendir' : falta.length ? 'Antes: ' + falta.map(function (q) { return esc(modById(q).code || modById(q).title); }).join(', ') : mp.pct + '% practicado') + '</small>' + notaBadge(id) + '</a>';
+        }).join('') + '</div>';
+      }).join('') + '</div></section>';
   }
 
   function viewModule(mid) {
-    var m = SDC.modules.filter(function (x) { return x.id === mid; })[0]; if (!m) return viewHome();
-    var idx = SDC.modules.indexOf(m), p = modProgress(m), next = SDC.modules[idx + 1];
-    main.innerHTML = '<div class="wrap"><div class="crumbs"><a href="#/">Inicio</a> / Módulo ' + (idx + 1) + '</div><h1 class="t">' + esc(m.title) + '</h1><p class="lead">' + inline(m.desc) + '</p><div class="meter" aria-label="Avance ' + p.pct + '%"><i style="width:' + p.pct + '%"></i></div>' +
-      '<ul class="subl">' + m.subs.map(function (s) { var sp = subProgress(s); return '<li><a href="#/t/' + s + '"><b>' + esc(SDC.subs[s].title) + '</b><small>' + sp.ok + ' de ' + sp.total + ' ejercicios</small></a></li>'; }).join('') + '</ul>' +
-      '<div class="thread"><b>En PatioApp</b><br>' + inline(m.thread) + '</div>' +
-      '<p class="books"><b>Libros base:</b> ' + inline(m.books) + '</p><p class="books"><b>Equivale en la universidad a:</b> ' + inline(m.uni) + '</p>' +
-      (m.capstone ? projectCard(m.capstone, 'c:' + m.id, 'Proyecto integrador del módulo') : '') +
-      (next ? '<p><a class="btn alt" href="#/m/' + next.id + '">Siguiente módulo: ' + esc(next.title) + '</a></p>' : '') + '</div>';
+    var m = modById(mid); if (!m) return viewHome();
+    var list = cursos(), idx = list.indexOf(m), p = modProgress(m), next = list[idx + 1], cn = cicloDe(mid);
+    var pre = (m.prereq || []).map(modById).filter(Boolean), falta = pre.filter(function (q) { return !aprobado(q.id); });
+    var ex = S.exam[mid], hrs = Math.round(m.subs.reduce(function (a, s) { return a + SDC.subs[s].lesson.split(/\s+/).length + (SDC.subs[s].deep || '').split(/\s+/).length; }, 0) / 180 + m.subs.length * 1.5);
+    main.innerHTML = '<div class="wrap"><div class="crumbs"><a href="#/">Inicio</a> / ' + (cn ? 'Ciclo ' + cn + ' / ' : '') + esc(m.code || 'Curso') + '</div><h1 class="t">' + esc(m.title) + '</h1>' +
+      '<dl class="ficha"><div><dt>Código</dt><dd>' + esc(m.code || '—') + '</dd></div><div><dt>Ciclo</dt><dd>' + (cn || '—') + '</dd></div><div><dt>Créditos</dt><dd>' + (m.cred || '—') + '</dd></div><div><dt>Unidades</dt><dd>' + m.subs.length + '</dd></div><div><dt>Dedicación estimada</dt><dd>' + hrs + ' h</dd></div><div><dt>Nota final</dt><dd>' + (nota(mid) !== null ? notaBadge(mid) : 'Sin rendir') + '</dd></div></dl>' +
+      '<p><b>Prerrequisitos:</b> ' + (pre.length ? pre.map(function (q) { return '<a href="#/m/' + q.id + '">' + esc((q.code ? q.code + ' ' : '') + q.title) + '</a>' + (aprobado(q.id) ? ' ✓' : ''); }).join(', ') : 'ninguno') + '</p>' +
+      (falta.length ? '<div class="call k"><p>Te recomendamos aprobar antes ' + falta.map(function (q) { return esc(q.title); }).join(' y ') + '. Este curso usa sus conceptos sin volver a explicarlos.</p></div>' : '') +
+      '<h2 class="sec">Sumilla</h2><p class="lead">' + inline(m.desc) + '</p><div class="meter" aria-label="Avance ' + p.pct + '%"><i style="width:' + p.pct + '%"></i></div>' +
+      (m.logros ? '<h2 class="sec">Logros de aprendizaje</h2><p>Al aprobar el curso, serás capaz de:</p><ol>' + m.logros.map(function (l) { return '<li>' + inline(l) + '</li>'; }).join('') + '</ol>' : '') +
+      '<h2 class="sec">Unidades</h2><ul class="subl">' + m.subs.map(function (s, i) { var sp = subProgress(s); return '<li><a href="#/t/' + s + '"><b>Unidad ' + (i + 1) + '. ' + esc(SDC.subs[s].title) + '</b><small>' + sp.ok + ' de ' + sp.total + ' ejercicios</small></a></li>'; }).join('') + '</ul>' +
+      '<h2 class="sec">Evaluación</h2><p>Practica cada unidad (ejercicios sin límite, con corrección inmediata), completa sus proyectos y rinde el <b>examen final</b>: ' + SDC.EXAM_N + ' preguntas tomadas de todas las unidades, en escala de 0 a 20. Apruebas con ' + SDC.NOTA_MIN + ' o más. Puedes rendirlo las veces que quieras: cada intento trae preguntas distintas y se guarda tu mejor nota.</p>' +
+      '<div class="row"><a class="btn" href="#/x/' + mid + '">' + (ex ? 'Volver a rendir el examen final' : 'Rendir el examen final') + '</a>' + (ex ? '<span class="hintl">Intentos: ' + ex.tries + ' · Última nota: ' + ex.last + ' · Mejor nota: ' + ex.best + '</span>' : '') + '</div>' +
+      '<h2 class="sec">En PatioApp</h2><div class="thread">' + inline(m.thread) + '</div>' +
+      '<h2 class="sec">Bibliografía básica</h2><p class="books">' + inline(m.books) + '</p><h2 class="sec">Equivalencia universitaria</h2><p class="books">' + inline(m.uni || '') + '</p>' +
+      (m.capstone ? projectCard(m.capstone, 'c:' + m.id, 'Proyecto integrador del curso') : '') +
+      (next ? '<p><a class="btn alt" href="#/m/' + next.id + '">Siguiente curso: ' + esc(next.title) + '</a></p>' : '') + '</div>';
     bindChecks(main);
+  }
+
+  /* Examen final: preguntas cerradas de todas las unidades, con nota vigesimal */
+  function examPool(m, seed) {
+    var R = SDC.rng(m.id + ':examen:' + seed), N = SDC.EXAM_N, per = Math.ceil(N / m.subs.length), picked = [];
+    m.subs.forEach(function (s) { var ok = SDC.exercises(s).filter(function (e) { return e.level >= 2 && (e.type === 'mcq' || e.type === 'tf' || e.type === 'input'); }); R.sample(ok, per).forEach(function (e) { picked.push(e); }); });
+    return R.shuffle(picked).slice(0, N);
+  }
+  function viewExam(mid) {
+    var m = modById(mid); if (!m) return viewHome();
+    var prev = S.exam[mid], qs = examPool(m, prev ? prev.tries : 0);
+    main.innerHTML = '<div class="wrap"><div class="crumbs"><a href="#/">Inicio</a> / <a href="#/m/' + mid + '">' + esc(m.code || m.title) + '</a> / Examen final</div><h1 class="t">Examen final: ' + esc(m.title) + '</h1><p class="lead">' + qs.length + ' preguntas de todas las unidades. No verás si aciertas hasta entregar. Nota mínima aprobatoria: ' + SDC.NOTA_MIN + ' de 20.</p><form id="exam" class="exam">' +
+      qs.map(function (e, i) {
+        var body = e.type === 'input' ? '<input class="answer" name="q' + i + '" autocomplete="off" spellcheck="false" placeholder="Tu respuesta">' :
+          '<div class="xopts">' + e.options.map(function (o, k) { return '<label><input type="radio" name="q' + i + '" value="' + k + '"><span>' + inline(o) + '</span></label>'; }).join('') + '</div>';
+        return '<fieldset class="xq" data-i="' + i + '"><legend><b>' + (i + 1) + '.</b> <a href="#/t/' + e.sub + '" tabindex="-1" class="xu">' + esc(SDC.subs[e.sub].title) + '</a></legend><p class="prompt">' + inline(e.prompt) + '</p>' + (e.code ? '<pre><code>' + esc(e.code) + '</code></pre>' : '') + body + '<div class="xres"></div></fieldset>';
+      }).join('') + '<p id="xmsg" role="status"></p><div class="row"><button class="btn" type="submit">Entregar examen</button><a class="btn alt" href="#/m/' + mid + '">Salir sin entregar</a></div></form></div>';
+    var form = document.getElementById('exam'), armed = false;
+    form.onsubmit = function (ev) {
+      ev.preventDefault();
+      var answers = qs.map(function (e, i) { if (e.type === 'input') { var v = form.querySelector('[name=q' + i + ']').value; return v.trim() ? v : null; } var r = form.querySelector('[name=q' + i + ']:checked'); return r ? +r.value : null; });
+      var blank = answers.filter(function (a) { return a === null; }).length;
+      if (blank && !armed) { armed = true; document.getElementById('xmsg').textContent = 'Te faltan ' + blank + ' preguntas. Si entregas así, cuentan como incorrectas. Pulsa otra vez «Entregar examen» para confirmar.'; return; }
+      var good = 0;
+      qs.forEach(function (e, i) {
+        var a = answers[i], ok = a !== null && (e.type === 'input' ? SDC.checkInput(e, a) : a === e.answer), fs = form.querySelector('[data-i="' + i + '"]');
+        if (ok) good++;
+        fs.classList.add(ok ? 'ok' : 'no');
+        fs.querySelectorAll('input').forEach(function (x) { x.disabled = true; });
+        fs.querySelector('.xres').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b>' + (ok ? 'Correcto.' : 'Incorrecto.') + '</b>' + (ok ? '' : 'Respuesta correcta: ' + inline(e.type === 'input' ? e.answers[0] : e.options[e.answer]) + '\n') + inline(e.explain || '') + '</div>';
+      });
+      var n = Math.round(good * 20 / qs.length), r = S.exam[mid] || { tries: 0, best: 0 };
+      r.tries++; r.last = n; r.best = Math.max(r.best || 0, n); r.fecha = new Date().toISOString().slice(0, 10); S.exam[mid] = r; save();
+      form.querySelector('.row').innerHTML = '<a class="btn" href="#/m/' + mid + '">Volver al sílabo</a><a class="btn alt" href="#/record">Ver récord académico</a>';
+      var box = document.createElement('div'); box.className = 'xnota ' + (n >= SDC.NOTA_MIN ? 'ap' : 'de');
+      box.innerHTML = '<b>' + (n < 10 ? '0' : '') + n + '</b><span>' + good + ' de ' + qs.length + ' correctas. ' + (n >= SDC.NOTA_MIN ? '¡Curso aprobado!' + (r.best > n ? ' Se mantiene tu mejor nota, ' + r.best + '.' : '') : 'Aún no apruebas. Repasa las unidades de las preguntas que fallaste (cada pregunta enlaza a su unidad) y vuelve a rendirlo: tendrás preguntas distintas.') + '</span>';
+      form.parentNode.insertBefore(box, form); renderSide({ exam: mid }); window.scrollTo(0, 0);
+    };
+  }
+
+  function viewRecord() {
+    var cr = creditos(), html = '';
+    (SDC.CICLOS || [{ n: 1, nombre: '', cursos: SDC.modules.map(function (m) { return m.id; }) }]).forEach(function (c) {
+      html += '<tr class="cic"><th colspan="5">Ciclo ' + c.n + ' · ' + esc(c.nombre) + '</th></tr>' + c.cursos.map(function (id) {
+        var m = modById(id); if (!m) return '';
+        var e = S.exam[id];
+        return '<tr><td>' + esc(m.code || '') + '</td><td><a href="#/m/' + id + '">' + esc(m.title) + '</a></td><td>' + (m.cred || '') + '</td><td>' + (e ? notaBadge(id) : '—') + '</td><td>' + (aprobado(id) ? 'Aprobado' : e ? 'Desaprobado' : 'Pendiente') + (e ? ' <small>(' + e.tries + ' int., ' + e.fecha + ')</small>' : '') + '</td></tr>';
+      }).join('');
+    });
+    var actual = (SDC.CICLOS || []).filter(function (c) { return c.cursos.some(function (id) { return modById(id) && !aprobado(id); }); })[0];
+    main.innerHTML = '<div class="wide"><h1 class="t">Récord académico</h1><p class="lead">Tus notas de examen final por curso, en escala vigesimal. Se guarda en este navegador junto con el resto de tu progreso.</p>' +
+      '<div class="stats"><div><b>' + cr.aprob + ' / ' + cr.total + '</b>créditos aprobados</div><div><b>' + (cr.prom === null ? '—' : cr.prom.toFixed(2)) + '</b>promedio ponderado</div><div><b>' + (actual ? actual.n : 'Egresado') + '</b>' + (actual ? 'ciclo en curso' : '¡todos los cursos aprobados!') + '</div></div>' +
+      '<div class="tablew"><table class="plan rec"><thead><tr><th>Código</th><th>Curso</th><th>Créd.</th><th>Nota</th><th>Estado</th></tr></thead><tbody>' + html + '</tbody></table></div><p class="books">El promedio ponderado multiplica la mejor nota de cada curso rendido por sus créditos. Este récord es una herramienta de estudio y no constituye un documento oficial.</p></div>';
   }
 
   function incoming(sid) { return SDC.order.filter(function (o) { return (SDC.subs[o].links || []).some(function (l) { return l[0] === sid; }); }); }
   function subHeader(sub, tab) {
     var m = SDC.modules.filter(function (x) { return x.id === sub.mod; })[0], p = subProgress(sub.id);
-    return '<div class="crumbs"><a href="#/">Inicio</a> / <a href="#/m/' + m.id + '">' + esc(m.title) + '</a></div><h1 class="t">' + esc(sub.title) + '</h1>' +
+    return '<div class="crumbs"><a href="#/">Inicio</a> / <a href="#/m/' + m.id + '">' + esc(codeOf(m) + m.title) + '</a> / Unidad ' + (m.subs.indexOf(sub.id) + 1) + ' de ' + m.subs.length + '</div><h1 class="t">' + esc(sub.title) + '</h1>' +
       '<nav class="tabs"><a href="#/t/' + sub.id + '" class="' + (tab === 'l' ? 'on' : '') + '">Lección</a><a href="#/t/' + sub.id + '/ej" class="' + (tab === 'e' ? 'on' : '') + '">Ejercicios (' + p.ok + ' de ' + p.total + ')</a>' +
       (sub.project || sub.hito ? '<a href="#/t/' + sub.id + '/pr" class="' + (tab === 'p' ? 'on' : '') + '">Proyectos</a>' : '') + '</nav>';
   }
@@ -419,10 +484,15 @@
 
   function viewPlan() {
     var total = 0; SDC.modules.forEach(function (m) { total += m.subs.length; });
-    main.innerHTML = '<div class="wide"><h1 class="t">Plan de estudios</h1><p class="lead">El curso sigue el orden de los planes de estudio de las mejores universidades: primero fundamentos de computación y matemática, luego programación y algoritmos, después sistemas, y al final la ingeniería del software, la operación y las especialidades. Son ' + SDC.modules.length + ' módulos y ' + total + ' temas.</p>' +
-      '<div class="tablew"><table class="plan"><thead><tr><th>#</th><th>Módulo y temas</th><th>Equivale en la universidad a</th></tr></thead><tbody>' + SDC.modules.map(function (m, i) {
-        return '<tr><td>' + (i + 1) + '</td><td><a href="#/m/' + m.id + '"><b>' + esc(m.title) + '</b></a><br><small>' + m.subs.map(function (s) { return esc(SDC.subs[s].title); }).join(' · ') + '</small></td><td><small>' + inline(m.uni || '') + '</small></td></tr>';
-      }).join('') + '</tbody></table></div><p class="books">Los códigos de curso son los publicados por cada universidad y pueden cambiar de numeración (por ejemplo, el MIT renumeró sus cursos en 2022). Este curso no está afiliado a ninguna de ellas ni otorga un título.</p></div>';
+    var rows = '';
+    (SDC.CICLOS || []).forEach(function (c) {
+      rows += '<tr class="cic"><th colspan="4">Ciclo ' + c.n + ' · ' + esc(c.nombre) + '</th></tr>' + c.cursos.map(function (id) {
+        var m = modById(id); if (!m) return '';
+        return '<tr><td>' + esc(m.code || '') + '<br><small>' + (m.cred || '') + ' créditos</small></td><td><a href="#/m/' + m.id + '"><b>' + esc(m.title) + '</b></a><br><small>' + m.subs.map(function (s) { return esc(SDC.subs[s].title); }).join(' · ') + '</small></td><td><small>' + ((m.prereq || []).map(function (q) { var x = modById(q); return x ? esc(x.code || x.title) : ''; }).join(', ') || '—') + '</small></td><td><small>' + inline(m.uni || '') + '</small></td></tr>';
+      }).join('');
+    });
+    main.innerHTML = '<div class="wide"><h1 class="t">Malla curricular</h1><p class="lead">La carrera sigue el orden de los planes de estudio de las mejores universidades: primero fundamentos de computación y matemática, luego programación, algoritmos y la máquina, después sistemas, datos y redes, y al final la ingeniería del software, la operación y las especialidades. Son ' + (SDC.CICLOS ? SDC.CICLOS.length + ' ciclos, ' : '') + SDC.modules.length + ' cursos, ' + creditos().total + ' créditos y ' + total + ' unidades.</p>' +
+      '<div class="tablew"><table class="plan"><thead><tr><th>Código</th><th>Curso y unidades</th><th>Prerrequisitos</th><th>Equivale en la universidad a</th></tr></thead><tbody>' + rows + '</tbody></table></div><p class="books">Los códigos de curso de otras universidades son los publicados por cada una y pueden cambiar de numeración (por ejemplo, el MIT renumeró sus cursos en 2022). Esta carrera virtual no está afiliada a ninguna de ellas ni otorga un título.</p></div>';
   }
 
   function viewSettings() {
@@ -433,21 +503,23 @@
     };
     document.getElementById('imp').onchange = function () {
       var f = this.files[0], rd = new FileReader();
-      rd.onload = function () { try { var d = JSON.parse(rd.result); if (!d.ex) throw 0; S = d; S.drafts = S.drafts || {}; S.read = S.read || {}; S.proj = S.proj || {}; save(); route(); document.getElementById('msg').textContent = 'Progreso cargado.'; } catch (e) { document.getElementById('msg').textContent = 'Ese archivo no es un progreso válido. Usa el que descargaste desde esta página.'; } };
+      rd.onload = function () { try { var d = JSON.parse(rd.result); if (!d.ex) throw 0; S = d; S.drafts = S.drafts || {}; S.read = S.read || {}; S.proj = S.proj || {}; S.exam = S.exam || {}; save(); route(); document.getElementById('msg').textContent = 'Progreso cargado.'; } catch (e) { document.getElementById('msg').textContent = 'Ese archivo no es un progreso válido. Usa el que descargaste desde esta página.'; } };
       rd.readAsText(f);
     };
     var rs = document.getElementById('rst'), armed = false;
-    rs.onclick = function () { if (!armed) { armed = true; rs.textContent = 'Toca otra vez para confirmar el borrado'; return; } S = { ex: {}, read: {}, last: null, drafts: {}, proj: {} }; save(); route(); };
+    rs.onclick = function () { if (!armed) { armed = true; rs.textContent = 'Toca otra vez para confirmar el borrado'; return; } S = { ex: {}, read: {}, last: null, drafts: {}, proj: {}, exam: {} }; save(); route(); };
   }
 
   function route() {
     keyHandler = null; window.onresize = null;
     var parts = (location.hash || '#/').slice(2).split('/'), r = {};
-    if (parts[0] === 't') r.sub = parts[1]; if (parts[0] === 'm') r.mod = parts[1];
+    if (parts[0] === 't') r.sub = parts[1]; if (parts[0] === 'm') r.mod = parts[1]; if (parts[0] === 'x') r.exam = parts[1];
     renderSide(r);
     side.classList.remove('open'); document.getElementById('scrim').classList.remove('open');
     if (parts[0] === 't') { if (parts[2] === 'ej') viewPractice(parts[1]); else if (parts[2] === 'pr') viewProjects(parts[1]); else viewLesson(parts[1]); }
     else if (parts[0] === 'm') viewModule(parts[1]);
+    else if (parts[0] === 'x') viewExam(parts[1]);
+    else if (parts[0] === 'record') viewRecord();
     else if (parts[0] === 'repaso') viewReview();
     else if (parts[0] === 'mapa') viewMap();
     else if (parts[0] === 'fuentes') viewSources();
